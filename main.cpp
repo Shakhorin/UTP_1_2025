@@ -51,6 +51,7 @@ int main()
     int userInput{};
     do
     {
+        cin.ignore();
         // Отображение меню и обработка выбора пользователя
         showMenu();
         cin >> userInput;
@@ -117,7 +118,7 @@ void preBase()
     }
     else
     {
-        cout << "Файл базы данных не найден. Будет создан новый." << endl;
+        cout << "Файл базы данных не найден. Будет создан новый?" << endl;
         return;
     }
 
@@ -198,6 +199,7 @@ void preBase()
                                     case 9: marks2[i] = stoi(currentField); break;
                                     case 10: marks3[i] = stoi(currentField); break;
                                     case 11: marks4[i] = stoi(currentField); break;
+                                    case 12: marks5[i] = stoi(currentField); break;
                                     default: break;
                                 }
                             }
@@ -211,16 +213,16 @@ void preBase()
                     }
 
                     // Обработка последнего поля (после последней ';')
-                    if (!currentField.empty()) {
-                        try {
-                            if (fieldNumber == 12) {
-                                marks5[i] = stoi(currentField);
-                            }
-                        }
-                        catch (const exception& e) {
-                            cout << "Ошибка преобразования последнего поля в строке " << (i+1) << endl;
-                        }
-                    }
+                    // if (!currentField.empty()) {
+                    //     try {
+                    //         if (fieldNumber == 12) {
+                    //             marks5[i] = stoi(currentField);
+                    //         }
+                    //     }
+                    //     catch (const exception& e) {
+                    //         cout << "Ошибка преобразования последнего поля в строке " << (i+1) << endl;
+                    //     }
+                    // }
                 }
                 cout << "Загружено записей: " << maxRecords << " студентов" << endl;
             }
