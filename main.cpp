@@ -82,7 +82,7 @@ int main()
             cout << "\nНажмите Enter для продолжения...";
             cin.get();
         }
-        system("cls"); // Очистка экрана
+        //system("cls"); // Очистка экрана
     }
     while (userInput != 13);
 
@@ -95,6 +95,10 @@ int main()
         finalExport();
     }
     return 0;
+}
+
+void exitProgram() {
+    cout << "Завершение работы программы..." << endl;
 }
 
 /**
@@ -175,7 +179,22 @@ void preBase()
                     cout << data[i] << endl;
                     string currentLine = data[i];
                     string currentField = "";
-                    int fieldNumber = 1;
+                    int fieldNumber = 1,position{};
+                    string position_string{};
+
+                    //инициализация id
+                    for (int k = 0; k < currentLine.length(); k++)
+                    {
+                        if (currentLine[k] != ';')
+                        {
+                            position_string += currentLine[k];
+                        }
+                        else
+                        {
+                            position = stoi(position_string)-1;
+                            break;
+                        }
+                    }
 
                     // Разбор строки на поля по разделителю ';'
                     for (int j = 0; j < currentLine.length(); j++)
@@ -191,21 +210,21 @@ void preBase()
                                 switch (fieldNumber)
                                 {
                                     case 1:
-                                        id[i] = stoi(currentField);
+                                        id[position] = stoi(currentField);
                                         // Удаляем использованный ID из свободных
                                         free_id.erase(remove(free_id.begin(), free_id.end(), id[i]), free_id.end());
                                         break;
-                                    case 2: lastname[i] = currentField; break;
-                                    case 3: name[i] = currentField; break;
-                                    case 4: fathername[i] = currentField; break;
-                                    case 5: level[i] = stoi(currentField); break;
-                                    case 6: group[i] = currentField; break;
-                                    case 7: first_year[i] = stoi(currentField); break;
-                                    case 8: marks1[i] = stoi(currentField); break;
-                                    case 9: marks2[i] = stoi(currentField); break;
-                                    case 10: marks3[i] = stoi(currentField); break;
-                                    case 11: marks4[i] = stoi(currentField); break;
-                                    case 12: marks5[i] = stoi(currentField); break;
+                                    case 2: lastname[position] = currentField; break;
+                                    case 3: name[position] = currentField; break;
+                                    case 4: fathername[position] = currentField; break;
+                                    case 5: level[position] = stoi(currentField); break;
+                                    case 6: group[position] = currentField; break;
+                                    case 7: first_year[position] = stoi(currentField); break;
+                                    case 8: marks1[position] = stoi(currentField); break;
+                                    case 9: marks2[position] = stoi(currentField); break;
+                                    case 10: marks3[position] = stoi(currentField); break;
+                                    case 11: marks4[position] = stoi(currentField); break;
+                                    case 12: marks5[position] = stoi(currentField); break;
                                     default: break;
                                 }
                             }
@@ -717,10 +736,6 @@ void editStudent() {
 
 void sortStudents() {
     cout << "Функция сортировки в разработке." << endl;
-}
-
-void exitProgram() {
-    cout << "Завершение работы программы..." << endl;
 }
 
 int searchStudent() {
