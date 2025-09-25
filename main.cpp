@@ -87,7 +87,13 @@ int main()
     while (userInput != 13);
 
     // Финальное сохранение при выходе
-    finalExport();
+    char userChoice{};
+    cout << "Вы хотите сохранить это состояние бд?(y/n)" << endl;
+    cin >> userChoice;
+    if (userChoice == 'y' or userChoice == 'Y')
+    {
+        finalExport();
+    }
     return 0;
 }
 
@@ -265,13 +271,13 @@ void finalExport()
     ofstream outFile("Main_database.csv");
     if (!outFile.is_open())
     {
-        cout << "Ошибка создания файла базы данных!" << endl;
+        cout << "Ошибка открытия файла базы данных!" << endl;
         return;
     }
 
-    // Заголовок CSV файла
-    outFile << "ID;Фамилия;Имя;Отчество;Курс;Группа;Год_поступления;"
-            << "Оценка1;Оценка2;Оценка3;Оценка4;Оценка5;Средний_балл" << endl;
+    // // Заголовок CSV файла
+    // outFile << "ID;Фамилия;Имя;Отчество;Курс;Группа;Год_поступления;"
+    //         << "Оценка1;Оценка2;Оценка3;Оценка4;Оценка5;Средний_балл" << endl;
 
     // Данные студентов
     for (int i : nonEmptyIndices)
