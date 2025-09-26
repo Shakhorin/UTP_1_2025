@@ -51,9 +51,10 @@ int main()
     int userInput{};
     do
     {
-        cin.ignore();
+        //cin.ignore();
         // Отображение меню и обработка выбора пользователя
         showMenu();
+        system("cls");
         cin >> userInput;
         cin.ignore(); // Очистка буфера после ввода числа
 
@@ -80,7 +81,7 @@ int main()
         if (userInput != 13)
         {
             cout << "\nНажмите Enter для продолжения...";
-            cin.get();
+            cin.ignore();
         }
         //system("cls"); // Очистка экрана
     }
@@ -466,6 +467,7 @@ void deleteStudent(int student_id)
     if (id[index] == 0)
     {
         cout << "Студент с ID " << student_id << " не найден" << endl;
+        system("cls");
         return;
     }
 
@@ -487,6 +489,7 @@ void deleteStudent(int student_id)
     free_id.push_back(student_id);
     sort(free_id.begin(), free_id.end()); // Сортировка для удобства
     cout << "Студент с ID " << student_id << " удален" << endl;
+
 }
 
 /**
@@ -495,7 +498,7 @@ void deleteStudent(int student_id)
 void deleteStudentMenu()
 {
     // Сначала показываем всех студентов
-    vector<int> nonEmptyIndices;
+    vector<int> nonEmptyIndices{};
     for (int i = 0; i < 10; i++)
     {
         if (id[i] != 0)
@@ -507,6 +510,7 @@ void deleteStudentMenu()
     if (nonEmptyIndices.empty())
     {
         cout << "Студенты еще не внесены в базу" << endl;
+        //system("cls");
         return;
     }
 
@@ -525,7 +529,9 @@ void deleteStudentMenu()
     int student_id{};
     cout << "\nВведите ID студента для удаления: ";
     cin >> student_id;
+    cin.ignore();
     deleteStudent(student_id);
+    //system("cls");
 }
 
 /**
@@ -555,7 +561,7 @@ void showMenu()
  */
 void processQuery()
 {
-    vector<int> nonEmptyIndices;
+    vector<int> nonEmptyIndices{};
     for (int i = 0; i < 10; i++)
     {
         if (id[i] != 0)
@@ -570,7 +576,7 @@ void processQuery()
         return;
     }
 
-    vector<int> studentsWithThreeOrMoreTwos;
+    vector<int> studentsWithThreeOrMoreTwos{};
 
     // Поиск студентов с 3 и более двойками
     for (int i : nonEmptyIndices)
@@ -591,6 +597,7 @@ void processQuery()
     if (studentsWithThreeOrMoreTwos.empty())
     {
         cout << "Студентов с тремя и более двойками не найдено" << endl;
+        system("cls");
         return;
     }
 
