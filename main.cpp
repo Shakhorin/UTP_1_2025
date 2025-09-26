@@ -212,7 +212,7 @@ void preBase()
                                     case 1:
                                         id[position] = stoi(currentField);
                                         // Удаляем использованный ID из свободных
-                                        free_id.erase(remove(free_id.begin(), free_id.end(), id[i]), free_id.end());
+                                        free_id.erase(remove(free_id.begin(), free_id.end(), id[position]), free_id.end());
                                         break;
                                     case 2: lastname[position] = currentField; break;
                                     case 3: name[position] = currentField; break;
