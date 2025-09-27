@@ -96,6 +96,7 @@ int main()
         // Пауза перед очисткой экрана (только если не выход)
         if (userInput != 13)
         {
+            //system("cls");
             cout << "\nНажмите Enter для продолжения...";
             cin.ignore();
         }
@@ -107,6 +108,7 @@ int main()
     char userChoice{};
     cout << "Вы хотите сохранить это состояние бд?(y/n)" << endl;
     cin >> userChoice;
+    cin.ignore();
     if (userChoice == 'y' or userChoice == 'Y')
     {
         finalExport();
@@ -382,6 +384,11 @@ void addStudent(string name_new, string lastname_new, string father_name_new,
     // Удаляем использованный ID из списка свободных
     free_id.erase(free_id.begin());
     cout << "Студент добавлен с ID: " << newStudentId << endl;
+    char replay{};
+    cout << "Хотите добавить еще?(y/n)" << endl;
+    cin >> replay;
+    cin.ignore();
+    if (replay == 'y' or replay == 'Y') inputFromKeyboard();
 }
 
 /**
@@ -660,8 +667,8 @@ void processQuery()
 
     if (studentsWithThreeOrMoreTwos.empty())
     {
-        cout << "Студентов с тремя и более двойками не найдено" << endl;
         system("cls");
+        cout << "Студентов с тремя и более двойками не найдено" << endl;
         return;
     }
 
