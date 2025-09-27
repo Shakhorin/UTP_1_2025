@@ -5,7 +5,6 @@
 #include <iomanip>
 #include <algorithm>
 using namespace std;
-
 // Глобальные массивы для хранения данных о студентах (максимум 10 записей)
 string name[10], lastname[10], fathername[10], group[10];
 int id[10] = {0}, level[10] = {0}, first_year[10] = {0},
