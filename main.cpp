@@ -57,6 +57,7 @@ int main()
         //cin.ignore();
         // Отображение меню и обработка выбора пользователя
         showMenu();
+
         system("cls");
         cin >> userInput;
         cin.ignore(); // Очистка буфера после ввода числа
