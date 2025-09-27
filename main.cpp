@@ -34,8 +34,8 @@ void convertTextToBinary();
 void addStudentMenu();
 void addStudentMenu(int id);
 void editStudent();
-void addStudentById(int id_new,string name_new, string lastname_new, string father_name_new,
-                int level_new, string group_new, int first_year_new, int marks_new[5]);
+void addStudentById(int id_new, string name_new, string lastname_new, string father_name_new,
+                    int level_new, string group_new, int first_year_new, int marks_new[5]);
 void deleteStudentMenu();
 void sortStudents();
 void exitProgram();
@@ -65,20 +65,33 @@ int main()
         // Обработка выбора пользователя
         switch (userInput)
         {
-            case 1: inputFromKeyboard(); break;//+
-            case 2: loadFromTextFile(); break;
-            case 3: loadFromBinaryFile(); break;
-            case 4: displayStudents(true); break;//+
-            case 5: saveToFile(); break;//+
-            case 6: processQuery(); break;//+
-            case 7: exportToTextFile(); break;
-            case 8: convertTextToBinary(); break;
-            case 9: addStudentMenu(); break;//+
-            case 10: editStudent(); break;
-            case 11: deleteStudentMenu(); break;//+
-            case 12: sortStudents(); break;
-            case 13: exitProgram(); break;//+
-            default: cout << "Неверный номер команды!\n" << endl;
+        case 1: inputFromKeyboard();
+            break; //+
+        case 2: loadFromTextFile();
+            break;
+        case 3: loadFromBinaryFile();
+            break;
+        case 4: displayStudents(true);
+            break; //+
+        case 5: saveToFile();
+            break; //+
+        case 6: processQuery();
+            break; //+
+        case 7: exportToTextFile();
+            break;
+        case 8: convertTextToBinary();
+            break;
+        case 9: addStudentMenu();
+            break; //+
+        case 10: editStudent();
+            break; //+
+        case 11: deleteStudentMenu();
+            break; //+
+        case 12: sortStudents();
+            break;
+        case 13: exitProgram();
+            break; //+
+        default: cout << "Неверный номер команды!\n" << endl;
         }
 
         // Пауза перед очисткой экрана (только если не выход)
@@ -102,7 +115,8 @@ int main()
     return 0;
 }
 
-void exitProgram() {
+void exitProgram()
+{
     cout << "Завершение работы программы..." << endl;
 }
 
@@ -184,7 +198,7 @@ void preBase()
                     cout << data[i] << endl;
                     string currentLine = data[i];
                     string currentField = "";
-                    int fieldNumber = 1,position{};
+                    int fieldNumber = 1, position{};
                     string position_string{};
 
                     //инициализация id
@@ -196,7 +210,7 @@ void preBase()
                         }
                         else
                         {
-                            position = stoi(position_string)-1;
+                            position = stoi(position_string) - 1;
                             break;
                         }
                     }
@@ -211,30 +225,44 @@ void preBase()
                         else
                         {
                             // Заполнение соответствующих массивов данными
-                            try {
+                            try
+                            {
                                 switch (fieldNumber)
                                 {
-                                    case 1:
-                                        id[position] = stoi(currentField);
-                                        // Удаляем использованный ID из свободных
-                                        free_id.erase(remove(free_id.begin(), free_id.end(), id[position]), free_id.end());
-                                        break;
-                                    case 2: lastname[position] = currentField; break;
-                                    case 3: name[position] = currentField; break;
-                                    case 4: fathername[position] = currentField; break;
-                                    case 5: level[position] = stoi(currentField); break;
-                                    case 6: group[position] = currentField; break;
-                                    case 7: first_year[position] = stoi(currentField); break;
-                                    case 8: marks1[position] = stoi(currentField); break;
-                                    case 9: marks2[position] = stoi(currentField); break;
-                                    case 10: marks3[position] = stoi(currentField); break;
-                                    case 11: marks4[position] = stoi(currentField); break;
-                                    case 12: marks5[position] = stoi(currentField); break;
-                                    default: break;
+                                case 1:
+                                    id[position] = stoi(currentField);
+                                    // Удаляем использованный ID из свободных
+                                    free_id.erase(remove(free_id.begin(), free_id.end(), id[position]), free_id.end());
+                                    break;
+                                case 2: lastname[position] = currentField;
+                                    break;
+                                case 3: name[position] = currentField;
+                                    break;
+                                case 4: fathername[position] = currentField;
+                                    break;
+                                case 5: level[position] = stoi(currentField);
+                                    break;
+                                case 6: group[position] = currentField;
+                                    break;
+                                case 7: first_year[position] = stoi(currentField);
+                                    break;
+                                case 8: marks1[position] = stoi(currentField);
+                                    break;
+                                case 9: marks2[position] = stoi(currentField);
+                                    break;
+                                case 10: marks3[position] = stoi(currentField);
+                                    break;
+                                case 11: marks4[position] = stoi(currentField);
+                                    break;
+                                case 12: marks5[position] = stoi(currentField);
+                                    break;
+                                default: break;
                                 }
                             }
-                            catch (const exception& e) {
-                                cout << "Ошибка преобразования данных в строке " << (i+1) << ", поле " << fieldNumber << endl;
+                            catch (const exception& e)
+                            {
+                                cout << "Ошибка преобразования данных в строке " << (i + 1) << ", поле " << fieldNumber
+                                    << endl;
                             }
 
                             fieldNumber++;
@@ -307,15 +335,15 @@ void finalExport()
     for (int i : nonEmptyIndices)
     {
         outFile << id[i] << ";"
-                << lastname[i] << ";"
-                << name[i] << ";"
-                << fathername[i] << ";"
-                << level[i] << ";"
-                << group[i] << ";"
-                << first_year[i] << ";"
-                << marks1[i] << ";" << marks2[i] << ";" << marks3[i] << ";"
-                << marks4[i] << ";" << marks5[i] << ";"
-                << fixed << setprecision(2) << getAverage(i) << endl;
+            << lastname[i] << ";"
+            << name[i] << ";"
+            << fathername[i] << ";"
+            << level[i] << ";"
+            << group[i] << ";"
+            << first_year[i] << ";"
+            << marks1[i] << ";" << marks2[i] << ";" << marks3[i] << ";"
+            << marks4[i] << ";" << marks5[i] << ";"
+            << fixed << setprecision(2) << getAverage(i) << endl;
     }
 
     outFile.close();
@@ -399,7 +427,6 @@ void addStudentMenu()
 
 void addStudentMenu(int id_new)
 {
-
     cout << "=== ИЗМЕНЕНИЕ ДАННЫХ СТУДЕНТА ===\n" << endl;
 
     string name_new, lastname_new, father_name_new, group_new;
@@ -474,7 +501,8 @@ void displayStudents(bool exportFlag)
     }
 
     // Предложение сохранения в файл
-    if (exportFlag){
+    if (exportFlag)
+    {
         char userInput;
         cout << "\nХотите сохранить данные в файл? (y/n): ";
         cin >> userInput;
@@ -527,7 +555,6 @@ void deleteStudent(int student_id)
     free_id.push_back(student_id);
     sort(free_id.begin(), free_id.end()); // Сортировка для удобства
     cout << "Студент с ID " << student_id << " удален" << endl;
-
 }
 
 /**
@@ -705,21 +732,21 @@ void saveToFile(vector<int> indicesToExport)
 
     // Заголовок CSV
     outFile << "ID;Фамилия;Имя;Отчество;Курс;Группа;Год_поступления;"
-            << "Оценка1;Оценка2;Оценка3;Оценка4;Оценка5;Средний_балл" << endl;
+        << "Оценка1;Оценка2;Оценка3;Оценка4;Оценка5;Средний_балл" << endl;
 
     // Данные студентов
     for (int i : indicesToExport)
     {
         outFile << id[i] << ";"
-                << lastname[i] << ";"
-                << name[i] << ";"
-                << fathername[i] << ";"
-                << level[i] << ";"
-                << group[i] << ";"
-                << first_year[i] << ";"
-                << marks1[i] << ";" << marks2[i] << ";" << marks3[i] << ";"
-                << marks4[i] << ";" << marks5[i] << ";"
-                << fixed << setprecision(2) << getAverage(i) << endl;
+            << lastname[i] << ";"
+            << name[i] << ";"
+            << fathername[i] << ";"
+            << level[i] << ";"
+            << group[i] << ";"
+            << first_year[i] << ";"
+            << marks1[i] << ";" << marks2[i] << ";" << marks3[i] << ";"
+            << marks4[i] << ";" << marks5[i] << ";"
+            << fixed << setprecision(2) << getAverage(i) << endl;
     }
 
     outFile.close();
@@ -758,7 +785,8 @@ void inputFromKeyboard()
     addStudentMenu();
 }
 
-void editStudent() {
+void editStudent()
+{
     cout << "Функция редактирования в разработке." << endl;
     displayStudents(false);
     int userChoice;
@@ -770,14 +798,15 @@ void editStudent() {
     cout << "Вы хотите изменить еще одного студента?(y/n)" << endl;
     cin >> replay;
     cin.ignore();
-    if (replay == 'y' or replay == 'Y'){
-            editStudent();
+    if (replay == 'y' or replay == 'Y')
+    {
+        editStudent();
     }
-
 }
 
-void addStudentById(int id_new,string name_new, string lastname_new, string father_name_new,
-                int level_new, string group_new, int first_year_new, int marks_new[5]){
+void addStudentById(int id_new, string name_new, string lastname_new, string father_name_new,
+                    int level_new, string group_new, int first_year_new, int marks_new[5])
+{
     int index = id_new - 1; // Индекс в массивах
 
     // Заполняем данные студента
@@ -798,27 +827,34 @@ void addStudentById(int id_new,string name_new, string lastname_new, string fath
     free_id.erase(free_id.begin());
     cout << "Изменен студент с ID: " << id_new << endl;
 }
+
 // Функции в разработке (заглушки)
-void loadFromTextFile() {
+void loadFromTextFile()
+{
     cout << "Функция загрузки из текстового файла в разработке." << endl;
 }
 
-void loadFromBinaryFile() {
+void loadFromBinaryFile()
+{
     cout << "Функция загрузки из бинарного файла в разработке." << endl;
 }
 
-void exportToTextFile() {
+void exportToTextFile()
+{
     cout << "Функция экспорта в текстовый файл в разработке." << endl;
 }
 
-void convertTextToBinary() {
+void convertTextToBinary()
+{
     cout << "Функция конвертации в бинарный файл в разработке." << endl;
 }
 
-void sortStudents() {
+void sortStudents()
+{
     cout << "Функция сортировки в разработке." << endl;
 }
 
-int searchStudent() {
+int searchStudent()
+{
     return 0;
 }
