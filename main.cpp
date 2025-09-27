@@ -24,7 +24,7 @@ void showMenu();
 void inputFromKeyboard();
 void loadFromTextFile();
 void loadFromBinaryFile();
-void displayStudents();
+void displayStudents(bool exportFlag);
 void displayStudents(vector<int> indices);
 void saveToFile(vector<int> indices);
 void saveToFile();
@@ -32,7 +32,10 @@ void processQuery();
 void exportToTextFile();
 void convertTextToBinary();
 void addStudentMenu();
+void addStudentMenu(int id);
 void editStudent();
+void addStudentById(int id_new,string name_new, string lastname_new, string father_name_new,
+                int level_new, string group_new, int first_year_new, int marks_new[5]);
 void deleteStudentMenu();
 void sortStudents();
 void exitProgram();
@@ -61,19 +64,19 @@ int main()
         // Обработка выбора пользователя
         switch (userInput)
         {
-            case 1: inputFromKeyboard(); break;
+            case 1: inputFromKeyboard(); break;//+
             case 2: loadFromTextFile(); break;
             case 3: loadFromBinaryFile(); break;
-            case 4: displayStudents(); break;
-            case 5: saveToFile(); break;
-            case 6: processQuery(); break;
+            case 4: displayStudents(true); break;//+
+            case 5: saveToFile(); break;//+
+            case 6: processQuery(); break;//+
             case 7: exportToTextFile(); break;
             case 8: convertTextToBinary(); break;
-            case 9: addStudentMenu(); break;
+            case 9: addStudentMenu(); break;//+
             case 10: editStudent(); break;
-            case 11: deleteStudentMenu(); break;
+            case 11: deleteStudentMenu(); break;//+
             case 12: sortStudents(); break;
-            case 13: exitProgram(); break;
+            case 13: exitProgram(); break;//+
             default: cout << "Неверный номер команды!\n" << endl;
         }
 
@@ -393,10 +396,42 @@ void addStudentMenu()
     addStudent(name_new, lastname_new, father_name_new, level_new, group_new, first_year_new, marks_new);
 }
 
+void addStudentMenu(int id_new)
+{
+
+    cout << "=== ИЗМЕНЕНИЕ ДАННЫХ СТУДЕНТА ===\n" << endl;
+
+    string name_new, lastname_new, father_name_new, group_new;
+    int level_new, first_year_new;
+    int marks_new[5];
+
+    // Ввод данных пользователя
+    cout << "Введите имя: ";
+    cin >> name_new;
+    cout << "Введите фамилию: ";
+    cin >> lastname_new;
+    cout << "Введите отчество: ";
+    cin >> father_name_new;
+    cout << "Введите курс: ";
+    cin >> level_new;
+    cout << "Введите группу: ";
+    cin >> group_new;
+    cout << "Введите год поступления: ";
+    cin >> first_year_new;
+    cout << "Введите 5 оценок через пробел: ";
+    for (int i = 0; i < 5; i++)
+    {
+        cin >> marks_new[i];
+    }
+
+    // Добавление студента в базу
+    addStudentById(id_new, name_new, lastname_new, father_name_new, level_new, group_new, first_year_new, marks_new);
+}
+
 /**
  * Отображение всех студентов в виде таблицы
  */
-void displayStudents()
+void displayStudents(bool exportFlag)
 {
     vector<int> nonEmptyIndices;
 
@@ -438,14 +473,16 @@ void displayStudents()
     }
 
     // Предложение сохранения в файл
-    char userInput;
-    cout << "\nХотите сохранить данные в файл? (y/n): ";
-    cin >> userInput;
-    cin.ignore();
+    if (exportFlag){
+        char userInput;
+        cout << "\nХотите сохранить данные в файл? (y/n): ";
+        cin >> userInput;
+        cin.ignore();
 
-    if (userInput == 'y' || userInput == 'Y')
-    {
-        saveToFile(nonEmptyIndices);
+        if (userInput == 'y' || userInput == 'Y')
+        {
+            saveToFile(nonEmptyIndices);
+        }
     }
 }
 
@@ -720,6 +757,46 @@ void inputFromKeyboard()
     addStudentMenu();
 }
 
+void editStudent() {
+    cout << "Функция редактирования в разработке." << endl;
+    displayStudents(false);
+    int userChoice;
+    cout << "Введите номер студента, которого нужно изменить" << endl;
+    cin >> userChoice;
+    cin.ignore();
+    addStudentMenu(userChoice);
+    char replay;
+    cout << "Вы хотите изменить еще одного студента?(y/n)" << endl;
+    cin >> replay;
+    cin.ignore();
+    if (replay == 'y' or replay == 'Y'){
+            editStudent();
+    }
+
+}
+
+void addStudentById(int id_new,string name_new, string lastname_new, string father_name_new,
+                int level_new, string group_new, int first_year_new, int marks_new[5]){
+    int index = id_new - 1; // Индекс в массивах
+
+    // Заполняем данные студента
+    id[index] = id_new;
+    name[index] = name_new;
+    lastname[index] = lastname_new;
+    fathername[index] = father_name_new;
+    level[index] = level_new;
+    group[index] = group_new;
+    first_year[index] = first_year_new;
+    marks1[index] = marks_new[0];
+    marks2[index] = marks_new[1];
+    marks3[index] = marks_new[2];
+    marks4[index] = marks_new[3];
+    marks5[index] = marks_new[4];
+
+    // Удаляем использованный ID из списка свободных
+    free_id.erase(free_id.begin());
+    cout << "Изменен студент с ID: " << id_new << endl;
+}
 // Функции в разработке (заглушки)
 void loadFromTextFile() {
     cout << "Функция загрузки из текстового файла в разработке." << endl;
@@ -735,10 +812,6 @@ void exportToTextFile() {
 
 void convertTextToBinary() {
     cout << "Функция конвертации в бинарный файл в разработке." << endl;
-}
-
-void editStudent() {
-    cout << "Функция редактирования в разработке." << endl;
 }
 
 void sortStudents() {
