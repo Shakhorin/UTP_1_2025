@@ -18,10 +18,10 @@ int main()
     do
     {
         //cin.ignore();
+        system("cls");
         // Отображение меню и обработка выбора пользователя
         showMenu();
 
-        system("cls");
         cin >> menuItemWhoUserChoised;
         cin.ignore(); // Очистка буфера после ввода числа
 
@@ -40,7 +40,7 @@ int main()
             break; //+
         case 6: processQuery();
             break; //+
-        case 7: exportToTextFile();
+        case 7: exportToTextFile_calc();
             break;
         case 8: convertTextToBinary();
             break;

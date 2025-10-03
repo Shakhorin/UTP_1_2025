@@ -749,9 +749,64 @@ void loadFromBinaryFile()
     cout << "Функция загрузки из бинарного файла в разработке." << endl;
 }
 
-void exportToTextFile()
+void exportToTextFile_calc()
 {
-    cout << "Функция экспорта в текстовый файл в разработке." << endl;
+    vector<int> nonEmptyIndices;
+
+    // Собираем индексы непустых записей
+    for (int i = 0; i < 10; i++)
+    {
+        if (id[i] != 0)
+        {
+            nonEmptyIndices.push_back(i);
+        }
+    }
+    exportToTextFile(nonEmptyIndices);
+}
+
+void exportToTextFile(vector<int> indicesToExport)
+{
+
+    if (indicesToExport.empty())
+    {
+        cout << "Нет данных для экспорта!" << endl;
+        return;
+    }
+
+    string fileName;
+    cout << "Введите название файла (без расширения): ";
+    cin >> fileName;
+    cin.ignore();
+
+    ofstream outFile(fileName + ".txt");
+    if (!outFile.is_open())
+    {
+        cout << "Ошибка создания файла!" << endl;
+        return;
+    }
+
+    // Заголовок CSV
+    outFile << "ID \t Фамилия \t Имя \t Отчество \t Курс \t Группа \t Год_поступления \t "
+        << "Оценка1;Оценка2;Оценка3;Оценка4;Оценка5;Средний_балл" << endl;
+
+    // Данные студентов
+    for (int i : indicesToExport)
+    {
+        outFile << id[i] << " \t "
+            << lastname[i] << " \t "
+            << name[i] << " \t "
+            << fathername[i] << " \t "
+            << level[i] << " \t "
+            << group[i] << " \t "
+            << first_year[i] << " \t "
+            << marks1[i] << ";" << marks2[i] << ";" << marks3[i] << ";"
+            << marks4[i] << ";" << marks5[i] << ";"
+            << fixed << setprecision(2) << getAverage(i) << endl;
+    }
+
+    outFile.close();
+    cout << "Данные успешно экспортированы в файл: " << fileName << ".txt" << endl;
+
 }
 
 void convertTextToBinary()
