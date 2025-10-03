@@ -19,6 +19,7 @@ int main()
     {
         //cin.ignore();
         system("cls");
+        cin.ignore();
         // Отображение меню и обработка выбора пользователя
         showMenu();
 
@@ -69,6 +70,7 @@ int main()
     while (menuItemWhoUserChoised != 13);
 
     // Финальное сохранение при выходе
+    system("cls");
     char userChoice{};
     cout << "Вы хотите сохранить это состояние бд?(y/n)" << endl;
     cin >> userChoice;

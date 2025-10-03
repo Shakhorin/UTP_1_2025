@@ -15,7 +15,7 @@ extern string name[10], lastname[10], fathername[10], group[10];
 extern int id[10], level[10], first_year[10];
 extern int marks1[10], marks2[10], marks3[10], marks4[10], marks5[10];
 extern vector<int> free_id;
-extern int menuItemWhoUserChoised ;
+extern int menuItemWhoUserChoised;
 
 // Прототипы функций
 void addStudent(string name_new, string lastname_new, string father_name_new,
