@@ -21,7 +21,8 @@ struct Student
 
 // Область объявления переменных
 Student Students[10]{};
-int userType{};
+vector<int> FreeId{1,2,3,4,5,6,7,8,9,10};
+int UserType{};
 
 // Конец области переменных
 
@@ -40,7 +41,7 @@ int main()
     system("chcp 65001");
     getLoginPass();
     int userChoice{};
-    switch (userType)
+    switch (UserType)
     {
     case 1:
         do
@@ -162,7 +163,7 @@ int loadChekUserData(string login, string password)
         if (passwordsUsers[distance(loginsUsers.begin(),find(loginsUsers.begin(),loginsUsers.end(),login))] == password)
         {
             cout << "Вы авторизованы как пользователь" << endl;
-            userType = 1;
+            UserType = 1;
         }else
         {
             cout << "Неверный пароль. Повторите попытку" << endl;
@@ -173,7 +174,7 @@ int loadChekUserData(string login, string password)
         if (passwordsAdmin[distance(loginsAdmin.begin(),find(loginsAdmin.begin(),loginsAdmin.end(),login))] == password)
         {
             cout << "Вы авторизованы как администратор" << endl;
-            userType = 2;
+            UserType = 2;
         }else
         {
             cout << "Неверный пароль. Повторите попытку" << endl;
@@ -184,8 +185,8 @@ int loadChekUserData(string login, string password)
         cout << "Неверный логин. Повторите попытку" << endl;
         getLoginPass();
     }
-    if (userType != 1 and userType != 2) userType = 0;
-    return userType;
+    if (UserType != 1 and UserType != 2) UserType = 0;
+    return UserType;
 }
 void userMenu()
 {
@@ -219,6 +220,11 @@ void loadFromTextFile()
             if (txtFile.is_open())
             {
                 cout << "Файл открыт успешно" << endl;
+                string txtLine{};
+                while (getline(txtFile,txtLine))
+                {
+                    cout << txtLine << endl;
+                }
             }else
             {
                 cout << "Ошибка открытия файла! Проверьте наличие файла и правильность пути." << endl;
@@ -236,7 +242,6 @@ void fixStreamState() {
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
-
 int getCorrectValue() {
     int n{};
     bool isNotOk{};
