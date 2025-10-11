@@ -4,6 +4,7 @@
 #include <string>
 #include <limits>
 #include <algorithm>
+#include <sstream>
 
 using namespace std;
 
@@ -32,8 +33,10 @@ int loadChekUserData(string login,string password);
 void userMenu();
 void adminMenu();
 void loadFromTextFile();
+void parsingText(vector<string>);
 void fixStreamState();
 int getCorrectValue();
+void addNewStudent(vector<string>);
 // Конец область функций
 
 int main()
@@ -203,6 +206,7 @@ void userMenu()
 }
 void loadFromTextFile()
 {
+    vector<string> txtLines{};
     cout << "Введите полный адрес файла (c/user/documents/doc.txt)" << endl;
     string linkFile{};
     cin >> linkFile;
@@ -221,10 +225,11 @@ void loadFromTextFile()
             {
                 cout << "Файл открыт успешно" << endl;
                 string txtLine{};
-                while (getline(txtFile,txtLine))
+                while (getline(txtFile,txtLine) and !txtLine.empty())
                 {
-                    cout << txtLine << endl;
+                    txtLines.push_back(txtLine);
                 }
+                parsingText(txtLines);
             }else
             {
                 cout << "Ошибка открытия файла! Проверьте наличие файла и правильность пути." << endl;
@@ -238,6 +243,32 @@ void loadFromTextFile()
         cout << "Ошибка! Неверный формат." << endl;
     }
 }
+void parsingText(vector<string> txtLines)
+{
+    vector<string> dataOneStudent{};
+    int indexString{};
+    for (string txtString :txtLines)
+    {
+        if (indexString++ == 0) continue;
+        stringstream ss(txtString);
+        string word{};
+        while (getline(ss, word, '\t'))
+        {
+            if (!word.empty()) {
+                dataOneStudent.push_back(word);
+            }
+        }
+        addNewStudent(dataOneStudent);
+    }
+}
+void addNewStudent(vector<string> dataOneStudent)
+{
+    if (dataOneStudent.size() != 12)
+    {
+        cout << "В файле неверный формат" << endl;
+    }
+}
+
 void fixStreamState() {
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
