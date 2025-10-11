@@ -1,185 +1,622 @@
-#include <iostream>       // Для ввода-вывода (cin, cout)
-#include <fstream>        // Для работы с файлами (ifstream, ofstream)
-#include <vector>         // Для использования контейнера vector (хотя в коде не используется)
-#include <string>         // Для работы со строками string
-#include <iomanip>        // Для форматирования вывода (setw, setprecision)
-//#include <conio.h>        // Для функций ввода (не используется в коде)
-using namespace std; // Использование стандартного пространства имён
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <iomanip>
+#include <algorithm>
+using namespace std;
+// Глобальные массивы для хранения данных о студентах (максимум 10 записей)
+string name[10], lastname[10], fathername[10], group[10];
+int id[10] = {0}, level[10] = {0}, first_year[10] = {0},
+    marks1[10] = {0}, marks2[10] = {0}, marks3[10] = {0},
+    marks4[10] = {0}, marks5[10] = {0};
 
-// Класс Student представляет студента с его характеристиками
-class Student {
-private:
-    int id; // Уникальный идентификатор студента
-    string name; // Имя студента
-    string lastname; // Фамилия студента
-    string father_name; // Отчество студента
-    int level; // Курс обучения
-    string group; // Группа
-    int first_year; // Год поступления
-    int marks[5]; // Массив из 5 оценок
+// Вектор свободных ID (изначально все ID от 1 до 10 свободны)
+vector<int> free_id{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-public:
-    static int next_id; // Статическая переменная для генерации уникальных ID
+// Прототипы функций
+void addStudent(string name_new, string lastname_new, string father_name_new,
+                int level_new, string group_new, int first_year_new, int marks_new[5]);
+void deleteStudent(int student_id);
+int searchStudent();
+void showMenu();
+void inputFromKeyboard();
+void loadFromTextFile();
+void loadFromBinaryFile();
+void displayStudents(bool exportFlag);
+void displayStudents(vector<int> indices);
+void saveToFile(vector<int> indices);
+void saveToFile();
+void processQuery();
+void exportToTextFile();
+void convertTextToBinary();
+void addStudentMenu();
+void addStudentMenu(int id);
+void editStudent();
+void addStudentById(int id_new, string name_new, string lastname_new, string father_name_new,
+                    int level_new, string group_new, int first_year_new, int marks_new[5]);
+void deleteStudentMenu();
+void sortStudents();
+void exitProgram();
+double getAverage(int index);
+void preBase();
+void finalExport();
 
-    // Конструктор по умолчанию - инициализирует все поля нулевыми значениями
-    Student() : id(0), level(0), first_year(0) {
-        for (int i = 0; i < 5; i++) marks[i] = 0; // Инициализация оценок нулями
-    }
+int main()
+{
+    // Установка русской кодировки для корректного отображения текста
+    system("chcp 65001");
 
-    // Параметризированный конструктор - создает объект с заданными параметрами
-    Student(string n, string l_n, string f_n, int l, string g, int f_y, int m[5]) {
-        addObj(n, l_n, f_n, l, g, f_y, m); // Вызов метода для инициализации
-    }
+    // Загрузка данных из файла при запуске программы
+    preBase();
 
-    // Метод для добавления/обновления данных студента
-    void addObj(string n, string l_n, string f_n, int l, string g, int f_y, int m[5]) {
-        id = next_id++; // Присвоение уникального ID и инкремент счетчика
-        name = n; // Установка имени
-        lastname = l_n; // Установка фамилии
-        father_name = f_n; // Установка отчества
-        level = l; // Установка курса
-        group = g; // Установка группы
-        first_year = f_y; // Установка года поступления
-        for (int i = 0; i < 5; i++) {
-            marks[i] = m[i]; // Копирование оценок из массива
-        }
-    }
+    int userInput{};
+    do
+    {
+        //cin.ignore();
+        // Отображение меню и обработка выбора пользователя
+        showMenu();
 
-    // Метод для отображения данных студента в консоли
-    void display() const {
-        // Вывод всех полей через табуляции в формате таблицы
-        cout << id << "\t" << lastname << "\t" << name << "\t" << father_name << "\t"
-                << level << "\t" << group << "\t" << first_year << "\t";
-        for (int i = 0; i < 5; i++) {
-            cout << marks[i] << " "; // Вывод всех оценок через пробел
-        }
-        cout << endl; // Переход на новую строку
-    }
+        system("cls");
+        cin >> userInput;
+        cin.ignore(); // Очистка буфера после ввода числа
 
-    // Геттеры (методы получения значений) для доступа к приватным полям:
-
-    int getId() const { return id; } // Получить ID
-    string getName() const { return name; } // Получить имя
-    string getLastName() const { return lastname; } // Получить фамилию
-    string getFatherName() const { return father_name; } // Получить отчество
-    int getLevel() const { return level; } // Получить курс
-    string getGroup() const { return group; } // Получить группу
-    int getFirstYear() const { return first_year; } // Получить год поступления
-    const int *getMarks() const { return marks; } // Получить указатель на массив оценок
-
-    // Сеттеры (методы установки значений) для изменения приватных полей:
-
-    void setName(string n) { name = n; } // Установить имя
-    void setLastName(string ln) { lastname = ln; } // Установить фамилию
-    void setFatherName(string fn) { father_name = fn; } // Установить отчество
-    void setLevel(int l) { level = l; } // Установить курс
-    void setGroup(string g) { group = g; } // Установить группу
-    void setFirstYear(int fy) { first_year = fy; } // Установить год поступления
-    void setMarks(int m[5]) {
-        // Установить оценки
-        for (int i = 0; i < 5; i++) marks[i] = m[i]; // Копирование нового массива оценок
-    }
-
-    // Метод для расчета средней оценки студента
-    double getAverage() const {
-        double sum = 0;
-        for (int i = 0; i < 5; i++) {
-            sum += marks[i]; // Суммирование всех оценок
-        }
-        return sum / 5.0; // Возврат среднего арифметического
-    }
-};
-
-// Инициализация статической переменной (начальное значение ID = 1)
-int Student::next_id = 1;
-
-// Глобальный массив для хранения студентов (фиксированный размер на 10 записей)
-Student students[10];
-
-// Прототипы функций (объявления перед их использованием в main)
-void showMenu(); // Показать главное меню
-void inputFromKeyboard(); // Ввод данных с клавиатуры
-void loadFromTextFile(); // Загрузка из текстового файла (заглушка)
-void loadFromBinaryFile(); // Загрузка из бинарного файла (заглушка)
-void displayAllStudents(); // Отображение всех студентов
-void saveToFile(); // Сохранение данных в файл
-void saveToFileFiltr(vector<Student> &students_with2);
-
-void processQuery(); // Выполнение запроса (заглушка)
-void exportToTextFile(); // Экспорт в текстовый файл (заглушка)
-void convertTextToBinary(); // Конвертация в бинарный файл (заглушка)
-void addStudent(); // Добавление записи (заглушка)
-void editStudent(); // Изменение записи (заглушка)
-void deleteStudent(); // Удаление записи (заглушка)
-void sortStudents(); // Сортировка данных (заглушка)
-void exitProgram(); // Выход из программы (заглушка)
-
-// Главная функция программы - точка входа
-int main() {
-    system("chcp 65001"); // Установка кодировки UTF-8 для корректного отображения русских символов
-
-    int userInput; // Переменная для хранения выбора пользователя
-
-    // Основной цикл программы
-    do {
-        showMenu(); // Отображение меню
-        cin >> userInput; // Чтение выбора пользователя
-        cin.ignore(); // Очистка буфера ввода от символа новой строки
-
-        // Обработка выбора пользователя с помощью switch
-        switch (userInput) {
-            case 1: inputFromKeyboard();
-                break; // Ввод с клавиатуры
-            case 2: loadFromTextFile();
-                break; // Загрузка из текстового файла
-            case 3: loadFromBinaryFile();
-                break; // Загрузка из бинарного файла
-            case 4: displayAllStudents();
-                break; // Вывод всех студентов
-            case 5: saveToFile();
-                break; // Сохранение в файл
-            case 6: processQuery();
-                break; // Выполнение запроса
-            case 7: exportToTextFile();
-                break; // Экспорт в текстовый файл
-            case 8: convertTextToBinary();
-                break; // Конвертация в бинарный
-            case 9: addStudent();
-                break; // Добавление записи
-            case 10: editStudent();
-                break; // Изменение записи
-            case 11: deleteStudent();
-                break; // Удаление записи
-            case 12: sortStudents();
-                break; // Сортировка данных
-            case 13: exitProgram();
-                break; // Выход из программы
-            default: cout << "Неверный номер\n" << endl; // Неправильный ввод
+        // Обработка выбора пользователя
+        switch (userInput)
+        {
+        case 1: inputFromKeyboard();
+            break; //+
+        case 2: loadFromTextFile();
+            break;
+        case 3: loadFromBinaryFile();
+            break;
+        case 4: displayStudents(true);
+            break; //+
+        case 5: saveToFile();
+            break; //+
+        case 6: processQuery();
+            break; //+
+        case 7: exportToTextFile();
+            break;
+        case 8: convertTextToBinary();
+            break;
+        case 9: addStudentMenu();
+            break; //+
+        case 10: editStudent();
+            break; //+
+        case 11: deleteStudentMenu();
+            break; //+
+        case 12: sortStudents();
+            break;
+        case 13: exitProgram();
+            break; //+
+        default: cout << "Неверный номер команды!\n" << endl;
         }
 
-        // Пауза перед продолжением (кроме выхода)
-        if (userInput != 13) {
+        // Пауза перед очисткой экрана (только если не выход)
+        if (userInput != 13)
+        {
+            //system("cls");
             cout << "\nНажмите Enter для продолжения...";
-            cin.get(); // Ожидание нажатия Enter
+            cin.ignore();
         }
+        //system("cls"); // Очистка экрана
+    }
+    while (userInput != 13);
 
-        system("cls"); // Очистка экрана консоли
-    } while (userInput != 13); // Цикл до выбора выхода
-
-    return 0; // Завершение программы
+    // Финальное сохранение при выходе
+    char userChoice{};
+    cout << "Вы хотите сохранить это состояние бд?(y/n)" << endl;
+    cin >> userChoice;
+    cin.ignore();
+    if (userChoice == 'y' or userChoice == 'Y')
+    {
+        finalExport();
+    }
+    return 0;
 }
 
-// Функция отображения главного менюl
-void showMenu() {
-    system("cls"); // Очистка консоли
+void exitProgram()
+{
+    cout << "Завершение работы программы..." << endl;
+}
+
+/**
+ * Функция предварительной загрузки базы данных из файла
+ * Проверяет наличие файла и предлагает загрузить данные
+ */
+void preBase()
+{
+    bool fullBase = false;
+    // Используем относительный путь для совместимости
+    ifstream base("Main_database.csv");
+
+    // Проверка существования и содержимого файла
+    if (base.is_open())
+    {
+        string line;
+        while (getline(base, line))
+        {
+            // Проверяем, что строка не пустая и содержит данные
+            if (!line.empty() && line.find(';') != string::npos)
+            {
+                fullBase = true;
+                break;
+            }
+        }
+        base.close();
+    }
+    else
+    {
+        cout << "Файл базы данных не найден. Будет создан новый?" << endl;
+        return;
+    }
+
+    // Если файл содержит данные, предлагаем загрузить их
+    if (fullBase)
+    {
+        char useInput{};
+        cout << "Хотите загрузить данные из последнего сохранения? (y/n): ";
+        cin >> useInput;
+        cin.ignore();
+
+        if (useInput == 'y' || useInput == 'Y')
+        {
+            // Загрузка данных из CSV файла
+            ifstream dataFile("Main_database.csv");
+
+            if (!dataFile.is_open())
+            {
+                cout << "Ошибка открытия файла для загрузки данных" << endl;
+                return;
+            }
+
+            vector<string> data{};
+            string line{};
+            int countStudents{};
+
+            // Чтение всех строк файла
+            while (getline(dataFile, line))
+            {
+                if (!line.empty() && line.find(';') != string::npos)
+                {
+                    data.push_back(line);
+                    countStudents++;
+                }
+            }
+            dataFile.close();
+
+            // Обработка загруженных данных
+            if (!data.empty())
+            {
+                cout << "\n=== ЗАГРУЖЕННЫЕ ДАННЫЕ ===" << endl;
+
+                // Ограничиваем количество записей размером массива (10)
+                int maxRecords = min((int)data.size(), 10);
+
+                for (int i = 0; i < maxRecords; i++)
+                {
+                    cout << data[i] << endl;
+                    string currentLine = data[i];
+                    string currentField = "";
+                    int fieldNumber = 1, position{};
+                    string position_string{};
+
+                    //инициализация id
+                    for (int k = 0; k < currentLine.length(); k++)
+                    {
+                        if (currentLine[k] != ';')
+                        {
+                            position_string += currentLine[k];
+                        }
+                        else
+                        {
+                            position = stoi(position_string) - 1;
+                            break;
+                        }
+                    }
+
+                    // Разбор строки на поля по разделителю ';'
+                    for (int j = 0; j < currentLine.length(); j++)
+                    {
+                        if (currentLine[j] != ';')
+                        {
+                            currentField += currentLine[j];
+                        }
+                        else
+                        {
+                            // Заполнение соответствующих массивов данными
+                            try
+                            {
+                                switch (fieldNumber)
+                                {
+                                case 1:
+                                    id[position] = stoi(currentField);
+                                    // Удаляем использованный ID из свободных
+                                    free_id.erase(remove(free_id.begin(), free_id.end(), id[position]), free_id.end());
+                                    break;
+                                case 2: lastname[position] = currentField;
+                                    break;
+                                case 3: name[position] = currentField;
+                                    break;
+                                case 4: fathername[position] = currentField;
+                                    break;
+                                case 5: level[position] = stoi(currentField);
+                                    break;
+                                case 6: group[position] = currentField;
+                                    break;
+                                case 7: first_year[position] = stoi(currentField);
+                                    break;
+                                case 8: marks1[position] = stoi(currentField);
+                                    break;
+                                case 9: marks2[position] = stoi(currentField);
+                                    break;
+                                case 10: marks3[position] = stoi(currentField);
+                                    break;
+                                case 11: marks4[position] = stoi(currentField);
+                                    break;
+                                case 12: marks5[position] = stoi(currentField);
+                                    break;
+                                default: break;
+                                }
+                            }
+                            catch (const exception& e)
+                            {
+                                cout << "Ошибка преобразования данных в строке " << (i + 1) << ", поле " << fieldNumber
+                                    << endl;
+                            }
+
+                            fieldNumber++;
+                            currentField = "";
+                        }
+                    }
+
+                    // Обработка последнего поля (после последней ';')
+                    // if (!currentField.empty()) {
+                    //     try {
+                    //         if (fieldNumber == 12) {
+                    //             marks5[i] = stoi(currentField);
+                    //         }
+                    //     }
+                    //     catch (const exception& e) {
+                    //         cout << "Ошибка преобразования последнего поля в строке " << (i+1) << endl;
+                    //     }
+                    // }
+                }
+                cout << "Загружено записей: " << maxRecords << " студентов" << endl;
+            }
+        }
+        else
+        {
+            cout << "Используются начальные настройки" << endl;
+        }
+    }
+    else
+    {
+        cout << "База данных пуста. Используются начальные настройки." << endl;
+    }
+}
+
+/**
+ * Функция финального экспорта при выходе из программы
+ * Сохраняет все данные в основной файл
+ */
+void finalExport()
+{
+    vector<int> nonEmptyIndices;
+
+    // Собираем индексы непустых записей
+    for (int i = 0; i < 10; i++)
+    {
+        if (id[i] != 0)
+        {
+            nonEmptyIndices.push_back(i);
+        }
+    }
+
+    if (nonEmptyIndices.empty())
+    {
+        cout << "Нет данных для сохранения." << endl;
+        return;
+    }
+
+    // Сохранение в основной файл базы данных
+    ofstream outFile("Main_database.csv");
+    if (!outFile.is_open())
+    {
+        cout << "Ошибка открытия файла базы данных!" << endl;
+        return;
+    }
+
+    // // Заголовок CSV файла
+    // outFile << "ID;Фамилия;Имя;Отчество;Курс;Группа;Год_поступления;"
+    //         << "Оценка1;Оценка2;Оценка3;Оценка4;Оценка5;Средний_балл" << endl;
+
+    // Данные студентов
+    for (int i : nonEmptyIndices)
+    {
+        outFile << id[i] << ";"
+            << lastname[i] << ";"
+            << name[i] << ";"
+            << fathername[i] << ";"
+            << level[i] << ";"
+            << group[i] << ";"
+            << first_year[i] << ";"
+            << marks1[i] << ";" << marks2[i] << ";" << marks3[i] << ";"
+            << marks4[i] << ";" << marks5[i] << ";"
+            << fixed << setprecision(2) << getAverage(i) << endl;
+    }
+
+    outFile.close();
+    cout << "Данные успешно сохранены в Main_database.csv" << endl;
+}
+
+/**
+ * Добавление нового студента в базу данных
+ */
+void addStudent(string name_new, string lastname_new, string father_name_new,
+                int level_new, string group_new, int first_year_new, int marks_new[5])
+{
+    if (free_id.empty())
+    {
+        cout << "Ошибка: нет свободных ID для добавления студента" << endl;
+        return;
+    }
+
+    // Берем первый свободный ID
+    const int newStudentId = free_id[0];
+    int index = newStudentId - 1; // Индекс в массивах
+
+    // Заполняем данные студента
+    id[index] = newStudentId;
+    name[index] = name_new;
+    lastname[index] = lastname_new;
+    fathername[index] = father_name_new;
+    level[index] = level_new;
+    group[index] = group_new;
+    first_year[index] = first_year_new;
+    marks1[index] = marks_new[0];
+    marks2[index] = marks_new[1];
+    marks3[index] = marks_new[2];
+    marks4[index] = marks_new[3];
+    marks5[index] = marks_new[4];
+
+    // Удаляем использованный ID из списка свободных
+    free_id.erase(free_id.begin());
+    cout << "Студент добавлен с ID: " << newStudentId << endl;
+    char replay{};
+    cout << "Хотите добавить еще?(y/n)" << endl;
+    cin >> replay;
+    cin.ignore();
+    if (replay == 'y' or replay == 'Y') inputFromKeyboard();
+}
+
+/**
+ * Меню добавления нового студента (ввод с клавиатуры)
+ */
+void addStudentMenu()
+{
+    if (free_id.empty())
+    {
+        cout << "Достигнуто максимальное количество студентов (10)" << endl;
+        return;
+    }
+
+    cout << "=== ДОБАВЛЕНИЕ НОВОГО СТУДЕНТА ===\n" << endl;
+
+    string name_new, lastname_new, father_name_new, group_new;
+    int level_new, first_year_new;
+    int marks_new[5];
+
+    // Ввод данных пользователя
+    cout << "Введите имя: ";
+    cin >> name_new;
+    cout << "Введите фамилию: ";
+    cin >> lastname_new;
+    cout << "Введите отчество: ";
+    cin >> father_name_new;
+    cout << "Введите курс: ";
+    cin >> level_new;
+    cout << "Введите группу: ";
+    cin >> group_new;
+    cout << "Введите год поступления: ";
+    cin >> first_year_new;
+    cout << "Введите 5 оценок через пробел: ";
+    for (int i = 0; i < 5; i++)
+    {
+        cin >> marks_new[i];
+    }
+
+    // Добавление студента в базу
+    addStudent(name_new, lastname_new, father_name_new, level_new, group_new, first_year_new, marks_new);
+}
+
+void addStudentMenu(int id_new)
+{
+    cout << "=== ИЗМЕНЕНИЕ ДАННЫХ СТУДЕНТА ===\n" << endl;
+
+    string name_new, lastname_new, father_name_new, group_new;
+    int level_new, first_year_new;
+    int marks_new[5];
+
+    // Ввод данных пользователя
+    cout << "Введите имя: ";
+    cin >> name_new;
+    cout << "Введите фамилию: ";
+    cin >> lastname_new;
+    cout << "Введите отчество: ";
+    cin >> father_name_new;
+    cout << "Введите курс: ";
+    cin >> level_new;
+    cout << "Введите группу: ";
+    cin >> group_new;
+    cout << "Введите год поступления: ";
+    cin >> first_year_new;
+    cout << "Введите 5 оценок через пробел: ";
+    for (int i = 0; i < 5; i++)
+    {
+        cin >> marks_new[i];
+    }
+
+    // Добавление студента в базу
+    addStudentById(id_new, name_new, lastname_new, father_name_new, level_new, group_new, first_year_new, marks_new);
+}
+
+/**
+ * Отображение всех студентов в виде таблицы
+ */
+void displayStudents(bool exportFlag)
+{
+    vector<int> nonEmptyIndices;
+
+    // Собираем индексы непустых записей
+    for (int i = 0; i < 10; i++)
+    {
+        if (id[i] != 0)
+        {
+            nonEmptyIndices.push_back(i);
+        }
+    }
+
+    if (nonEmptyIndices.empty())
+    {
+        cout << "Студенты еще не внесены в базу" << endl;
+        return;
+    }
+
+    // Вывод заголовка таблицы
+    cout << "=== СПИСОК ВСЕХ СТУДЕНТОВ ===\n" << endl;
+    cout << "ID\tФамилия\tИмя\tОтчество\tКурс\tГруппа\tГод\tОценки" << endl;
+    cout << "----------------------------------------------------------------" << endl;
+
+    // Вывод данных студентов
+    for (int i : nonEmptyIndices)
+    {
+        cout << id[i] << "\t";
+        cout << lastname[i] << "\t";
+        cout << name[i] << "\t";
+        cout << fathername[i] << "\t\t";
+        cout << level[i] << "\t";
+        cout << group[i] << "\t";
+        cout << first_year[i] << "\t";
+        cout << marks1[i] << " ";
+        cout << marks2[i] << " ";
+        cout << marks3[i] << " ";
+        cout << marks4[i] << " ";
+        cout << marks5[i] << endl;
+    }
+
+    // Предложение сохранения в файл
+    if (exportFlag)
+    {
+        char userInput;
+        cout << "\nХотите сохранить данные в файл? (y/n): ";
+        cin >> userInput;
+        cin.ignore();
+
+        if (userInput == 'y' || userInput == 'Y')
+        {
+            saveToFile(nonEmptyIndices);
+        }
+    }
+}
+
+/**
+ * Удаление студента по ID
+ */
+void deleteStudent(int student_id)
+{
+    // Проверка корректности ID
+    if (student_id < 1 || student_id > 10)
+    {
+        cout << "Неверный ID студента (должен быть от 1 до 10)" << endl;
+        return;
+    }
+
+    int index = student_id - 1;
+
+    // Проверка существования студента
+    if (id[index] == 0)
+    {
+        cout << "Студент с ID " << student_id << " не найден" << endl;
+        system("cls");
+        return;
+    }
+
+    // Очистка данных студента
+    id[index] = 0;
+    name[index] = "";
+    lastname[index] = "";
+    fathername[index] = "";
+    group[index] = "";
+    level[index] = 0;
+    first_year[index] = 0;
+    marks1[index] = 0;
+    marks2[index] = 0;
+    marks3[index] = 0;
+    marks4[index] = 0;
+    marks5[index] = 0;
+
+    // Возврат ID в список свободных
+    free_id.push_back(student_id);
+    sort(free_id.begin(), free_id.end()); // Сортировка для удобства
+    cout << "Студент с ID " << student_id << " удален" << endl;
+}
+
+/**
+ * Меню удаления студента
+ */
+void deleteStudentMenu()
+{
+    // Сначала показываем всех студентов
+    vector<int> nonEmptyIndices{};
+    for (int i = 0; i < 10; i++)
+    {
+        if (id[i] != 0)
+        {
+            nonEmptyIndices.push_back(i);
+        }
+    }
+
+    if (nonEmptyIndices.empty())
+    {
+        cout << "Студенты еще не внесены в базу" << endl;
+        //system("cls");
+        return;
+    }
+
+    cout << "=== ТЕКУЩИЕ СТУДЕНТЫ ===\n" << endl;
+    cout << "ID\tФамилия\tИмя" << endl;
+    cout << "----------------------" << endl;
+
+    for (int i : nonEmptyIndices)
+    {
+        cout << id[i] << "\t";
+        cout << lastname[i] << "\t";
+        cout << name[i] << endl;
+    }
+
+    // Запрос ID для удаления
+    int student_id{};
+    cout << "\nВведите ID студента для удаления: ";
+    cin >> student_id;
+    cin.ignore();
+    deleteStudent(student_id);
+    //system("cls");
+}
+
+/**
+ * Отображение главного меню программы
+ */
+void showMenu()
+{
     cout << "========== СИСТЕМА УПРАВЛЕНИЯ СТУДЕНТАМИ ==========\n" << endl;
-    // Пункты меню:
     cout << "1. Ввод информации с клавиатуры" << endl;
     cout << "2. Загрузка из текстового файла" << endl;
     cout << "3. Загрузка из бинарного файла" << endl;
     cout << "4. Вывод данных в виде таблицы" << endl;
     cout << "5. Сохранение данных в файл" << endl;
-    cout << "6. Выполнение запроса" << endl;
+    cout << "6. Выполнение запроса (поиск двоечников)" << endl;
     cout << "7. Экспорт в текстовый файл" << endl;
     cout << "8. Конвертация в бинарный файл" << endl;
     cout << "9. Добавление записи" << endl;
@@ -187,255 +624,243 @@ void showMenu() {
     cout << "11. Удаление записи" << endl;
     cout << "12. Сортировка данных" << endl;
     cout << "13. Выход" << endl;
-    cout << "\nВведите номер команды: "; // Приглашение к вводу
+    cout << "\nВведите номер команды: ";
 }
 
-// Функция ввода данных с клавиатуры
-void inputFromKeyboard() {
-    // Проверка на переполнение массива
-    bool chekArr = false;
-    for (int i = 0; i < 10; i++) {
-        if (students[i].getId() == 0) {
-            chekArr = true;
-            break;
-        }
-    }
-    if (chekArr == false) {
-        cout << "Внесено максимальное количество студентов" << endl;
-        return; // Выход в случае переполнения массива
-    }
-
-    cout << "=== РЕЖИМ ВВОДА С КЛАВИАТУРЫ ===\n" << endl;
-
-    // Объявление переменных для данных студента
-    string name, lastname, father_name, group;
-    int level, first_year;
-    int marks[5]; // Массив для 5 оценок
-
-    // Ввод данных с клавиатуры:
-    cout << "Введите имя: ";
-    cin >> name;
-    cout << "Введите фамилию: ";
-    cin >> lastname;
-    cout << "Введите отчество: ";
-    cin >> father_name;
-    cout << "Введите курс: ";
-    cin >> level;
-    cout << "Введите группу: ";
-    cin >> group;
-    cout << "Введите год поступления: ";
-    cin >> first_year;
-    cout << "Введите 5 оценок через пробел: ";
-    for (int i = 0; i < 5; i++) {
-        cin >> marks[i]; // Ввод каждой оценки
-    }
-
-    // Создание объекта студента и добавление в массив
-    Student newStudent(name, lastname, father_name, level, group, first_year, marks);
-    students[newStudent.getId() - 1] = newStudent; // Добавление в массив по индексу (ID-1)
-
-    cout << "\nСтудент добавлен успешно! ID: " << newStudent.getId() << endl;
-}
-
-// Функция отображения всех студентов в табличном формате
-void displayAllStudents() {
-    bool isEmpty = true;
-
-    // Проверка, есть ли хотя бы один студент в массиве
-    for (int i = 0; i < 10; i++) {
-        if (students[i].getId() != 0) {
-            isEmpty = false;
-            break;
+/**
+ * Выполнение запроса - поиск студентов с тремя и более двойками
+ */
+void processQuery()
+{
+    vector<int> nonEmptyIndices{};
+    for (int i = 0; i < 10; i++)
+    {
+        if (id[i] != 0)
+        {
+            nonEmptyIndices.push_back(i);
         }
     }
 
-    if (isEmpty) {
-        cout << "База данных пуста!" << endl;
-        return; // Выход если нет студентов
+    if (nonEmptyIndices.empty())
+    {
+        cout << "Студенты еще не внесены в базу" << endl;
+        return;
     }
 
-    cout << "=== СПИСОК ВСЕХ СТУДЕНТОВ ===\n" << endl;
-    // Заголовок таблицы
+    vector<int> studentsWithThreeOrMoreTwos{};
+
+    // Поиск студентов с 3 и более двойками
+    for (int i : nonEmptyIndices)
+    {
+        int countTwos = 0;
+        if (marks1[i] == 2) countTwos++;
+        if (marks2[i] == 2) countTwos++;
+        if (marks3[i] == 2) countTwos++;
+        if (marks4[i] == 2) countTwos++;
+        if (marks5[i] == 2) countTwos++;
+
+        if (countTwos >= 3)
+        {
+            studentsWithThreeOrMoreTwos.push_back(i);
+        }
+    }
+
+    if (studentsWithThreeOrMoreTwos.empty())
+    {
+        system("cls");
+        cout << "Студентов с тремя и более двойками не найдено" << endl;
+        return;
+    }
+
+    // Отображение результатов запроса
+    displayStudents(studentsWithThreeOrMoreTwos);
+}
+
+/**
+ * Отображение студентов из переданного списка индексов
+ */
+void displayStudents(vector<int> indicesToDisplay)
+{
+    cout << "=== РЕЗУЛЬТАТЫ ЗАПРОСА ===\n" << endl;
     cout << "ID\tФамилия\tИмя\tОтчество\tКурс\tГруппа\tГод\tОценки" << endl;
     cout << "----------------------------------------------------------------" << endl;
 
-    // Цикл по всем студентам в массиве
-    for (int i = 0; i < 10; i++) {
-        if (students[i].getId() != 0) {
-            students[i].display(); // Вывод данных каждого студента
-        }
+    for (int i : indicesToDisplay)
+    {
+        cout << id[i] << "\t";
+        cout << lastname[i] << "\t";
+        cout << name[i] << "\t";
+        cout << fathername[i] << "\t\t";
+        cout << level[i] << "\t";
+        cout << group[i] << "\t";
+        cout << first_year[i] << "\t";
+        cout << marks1[i] << " ";
+        cout << marks2[i] << " ";
+        cout << marks3[i] << " ";
+        cout << marks4[i] << " ";
+        cout << marks5[i] << endl;
     }
 
-    // Предложение сохранить данные в файл
+    // Предложение сохранения результатов
     char userInput;
-    cout << "Хотите сохранить данные в файл?(y/n)\n" << endl;
+    cout << "\nХотите сохранить результаты в файл? (y/n): ";
     cin >> userInput;
-    if (userInput == 'n') {
-        return;
+    cin.ignore();
+
+    if (userInput == 'y' || userInput == 'Y')
+    {
+        saveToFile(indicesToDisplay);
     }
-    saveToFile(); // Вызов функции сохранения
 }
 
-// Функция сохранения данных в CSV файл
-void saveToFile() {
-    // Проверка на пустоту базы данных
-
-    bool isEmpty = true;
-    for (int i = 0; i < 10; i++) {
-        if (students[i].getId() != 0) {
-            isEmpty = false;
-            break;
-        }
-    }
-
-    if (isEmpty) {
-        cout << "База данных пуста! Нечего экспортировать." << endl;
+/**
+ * Сохранение данных в CSV файл
+ */
+void saveToFile(vector<int> indicesToExport)
+{
+    if (indicesToExport.empty())
+    {
+        cout << "Нет данных для экспорта!" << endl;
         return;
     }
-    cout << "Сохранение в файл..." << endl;
-    string file_name;
-    cout << "Введить название файла\n" << endl;
-    cin >> file_name;
 
+    string fileName;
+    cout << "Введите название файла (без расширения): ";
+    cin >> fileName;
+    cin.ignore();
 
-    // Создаем и открываем CSV файл для записи
-    ofstream outFile(file_name + ".csv");
-
-    if (!outFile.is_open()) {
+    ofstream outFile(fileName + ".csv");
+    if (!outFile.is_open())
+    {
         cout << "Ошибка создания файла!" << endl;
         return;
     }
 
-    // Записываем заголовки столбцов с разделителем ";"
-    outFile << "ID;Familiya;Imya;Otchestvo;Kurs;Gruppa;God postupleniya;"
-            << "Otsenka 1;Otsenka 2;Otsenka 3;Otsenka 4;Otsenka 5;Srednii ball" << endl;
+    // Заголовок CSV
+    outFile << "ID;Фамилия;Имя;Отчество;Курс;Группа;Год_поступления;"
+        << "Оценка1;Оценка2;Оценка3;Оценка4;Оценка5;Средний_балл" << endl;
 
-    // Записываем данные всех студентов
-    for (int i = 0; i < 10; i++) {
-        if (students[i].getId() != 0) {
-            const int *marks = students[i].getMarks();
-
-            // Форматированный вывод данных в CSV формате
-            outFile << students[i].getId() << ";"
-                    << students[i].getLastName() << ";"
-                    << students[i].getName() << ";"
-                    << students[i].getFatherName() << ";"
-                    << students[i].getLevel() << ";"
-                    << students[i].getGroup() << ";"
-                    << students[i].getFirstYear() << ";"
-                    << marks[0] << ";" << marks[1] << ";" << marks[2] << ";"
-                    << marks[3] << ";" << marks[4] << ";"
-                    << fixed << setprecision(2) << students[i].getAverage() << endl;
-        }
+    // Данные студентов
+    for (int i : indicesToExport)
+    {
+        outFile << id[i] << ";"
+            << lastname[i] << ";"
+            << name[i] << ";"
+            << fathername[i] << ";"
+            << level[i] << ";"
+            << group[i] << ";"
+            << first_year[i] << ";"
+            << marks1[i] << ";" << marks2[i] << ";" << marks3[i] << ";"
+            << marks4[i] << ";" << marks5[i] << ";"
+            << fixed << setprecision(2) << getAverage(i) << endl;
     }
 
-    outFile.close(); // Закрытие файла
-    cout << "Данные успешно экспортированы в файл: " << file_name + ".csv" << endl;
-    cout << "Файл можно открыть в Microsoft Excel или другой табличной программе." << endl;
-    cout << "Нажмите Enter,чтобы продолжить...\n" << endl;
-    cin.get();
+    outFile.close();
+    cout << "Данные успешно экспортированы в файл: " << fileName << ".csv" << endl;
 }
 
-void saveToFileFiltr(vector<Student> &students_with2) {
-    // Проверка на пустоту вектора
-
-    if (students_with2.empty()) {
-        cout << "Таких! Нечего экспортировать." << endl;
-        return;
-    }
-    cout << "Сохранение в файл..." << endl;
-    string file_name;
-    cout << "Введить название файла\n" << endl;
-    cin >> file_name;
-
-
-    // Создаем и открываем CSV файл для записи
-    ofstream outFile(file_name + ".csv");
-
-    if (!outFile.is_open()) {
-        cout << "Ошибка создания файла!" << endl;
-        return;
-    } else {
-        cout << "Файл создан успешно\n" << endl;
-    }
-
-    // Записываем заголовки столбцов с разделителем ";"
-    outFile << "ID;Familiya;Imya;Otchestvo;Kurs;Gruppa;God postupleniya;"
-            << "Otsenka 1;Otsenka 2;Otsenka 3;Otsenka 4;Otsenka 5;Srednii ball" << endl;
-
-    // Записываем данные всех студентов
-    for (int i = 0; i < students_with2.size(); i++) {
-        if (students_with2[i].getId() != 0) {
-            const int *marks = students_with2[i].getMarks();
-
-            // Форматированный вывод данных в CSV формате
-            outFile << students_with2[i].getId() << ";"
-                    << students_with2[i].getLastName() << ";"
-                    << students_with2[i].getName() << ";"
-                    << students_with2[i].getFatherName() << ";"
-                    << students_with2[i].getLevel() << ";"
-                    << students_with2[i].getGroup() << ";"
-                    << students_with2[i].getFirstYear() << ";"
-                    << marks[0] << ";" << marks[1] << ";" << marks[2] << ";"
-                    << marks[3] << ";" << marks[4] << ";"
-                    << fixed << setprecision(2) << students_with2[i].getAverage() << endl;
-        }
-    }
-
-    outFile.close(); // Закрытие файла
-    cout << "Данные успешно экспортированы в файл: " << file_name + ".csv" << endl;
-    cout << "Файл можно открыть в Microsoft Excel или другой табличной программе." << endl;
-    cout << "Нажмите Enter,чтобы продолжить...\n" << endl;
-    cin.get();
+/**
+ * Расчет среднего балла студента
+ */
+double getAverage(int index)
+{
+    return (marks1[index] + marks2[index] + marks3[index] + marks4[index] + marks5[index]) / 5.0;
 }
 
-void processQuery() {
-    cout << "Выполнение запроса..." << endl;
-    vector<Student> students_with2;
-    for (int i = 0; i < 10; i++) {
-        int count = 0;
-        const int *chekMarks = students[i].getMarks();
-        for (int c = 0; c < 5; c++) {
-            if (chekMarks[c] == 2) { count++; }
-        }
-        if (count >= 3) {
-            students_with2.push_back(students[i]);
-        }
-    }
-    if (students_with2.empty()) {
-        cout << "Студентов с двойками по трем предметам нет\n" << endl;
-        return;
-    }
-    cout << "=== СПИСОК СТУДЕНТОВ С ДВОЙКАМИ ПО ТРЕМ ПРЕДМЕТАМ ===\n" << endl;
-    // Заголовок таблицы
-    cout << "ID\tФамилия\tИмя\tОтчество\tКурс\tГруппа\tГод\tОценки" << endl;
-    cout << "----------------------------------------------------------------" << endl;
-
-    // Цикл по всем студентам в массиве
-    for (int i = 0; i < students_with2.size(); i++) {
-        if (students_with2[i].getId() != 0) {
-            students_with2[i].display(); // Вывод данных каждого студента
+/**
+ * Сохранение всех данных (без параметров)
+ */
+void saveToFile()
+{
+    vector<int> nonEmptyIndices;
+    for (int i = 0; i < 10; i++)
+    {
+        if (id[i] != 0)
+        {
+            nonEmptyIndices.push_back(i);
         }
     }
-
-    // Предложение сохранить данные в файл
-    char userInput;
-    cout << "Хотите сохранить данные в файл?(y/n)\n" << endl;
-    cin >> userInput;
-    if (userInput == 'n') {
-        return;
-    }
-    saveToFileFiltr(students_with2); // Вызов функции сохранения
+    saveToFile(nonEmptyIndices);
 }
 
-// ЗАГЛУШКИ ФУНКЦИЙ (реализация будет добавлена позже):
+/**
+ * Ввод данных с клавиатуры
+ */
+void inputFromKeyboard()
+{
+    addStudentMenu();
+}
 
-void loadFromTextFile() { cout << "Загрузка из текстового файла..." << endl; }
-void loadFromBinaryFile() { cout << "Загрузка из бинарного файла..." << endl; }
-void exportToTextFile() { cout << "Экспорт в текстовый файл..." << endl; }
-void convertTextToBinary() { cout << "Конвертация в бинарный файл..." << endl; }
-void addStudent() { cout << "Добавление записи..." << endl; }
-void editStudent() { cout << "Изменение записи..." << endl; }
-void deleteStudent() { cout << "Удаление записи..." << endl; }
-void sortStudents() { cout << "Сортировка данных..." << endl; }
-void exitProgram() { cout << "Выход из программы..." << endl; }
+void editStudent()
+{
+    cout << "Функция редактирования в разработке." << endl;
+    displayStudents(false);
+    int userChoice;
+    cout << "Введите номер студента, которого нужно изменить" << endl;
+    cin >> userChoice;
+    cin.ignore();
+    addStudentMenu(userChoice);
+    char replay;
+    cout << "Вы хотите изменить еще одного студента?(y/n)" << endl;
+    cin >> replay;
+    cin.ignore();
+    if (replay == 'y' or replay == 'Y')
+    {
+        editStudent();
+    }
+}
+
+void addStudentById(int id_new, string name_new, string lastname_new, string father_name_new,
+                    int level_new, string group_new, int first_year_new, int marks_new[5])
+{
+    int index = id_new - 1; // Индекс в массивах
+
+    // Заполняем данные студента
+    id[index] = id_new;
+    name[index] = name_new;
+    lastname[index] = lastname_new;
+    fathername[index] = father_name_new;
+    level[index] = level_new;
+    group[index] = group_new;
+    first_year[index] = first_year_new;
+    marks1[index] = marks_new[0];
+    marks2[index] = marks_new[1];
+    marks3[index] = marks_new[2];
+    marks4[index] = marks_new[3];
+    marks5[index] = marks_new[4];
+
+    // Удаляем использованный ID из списка свободных
+    free_id.erase(free_id.begin());
+    cout << "Изменен студент с ID: " << id_new << endl;
+}
+
+// Функции в разработке (заглушки)
+void loadFromTextFile()
+{
+    cout << "Функция загрузки из текстового файла в разработке." << endl;
+}
+
+void loadFromBinaryFile()
+{
+    cout << "Функция загрузки из бинарного файла в разработке." << endl;
+}
+
+void exportToTextFile()
+{
+    cout << "Функция экспорта в текстовый файл в разработке." << endl;
+}
+
+void convertTextToBinary()
+{
+    cout << "Функция конвертации в бинарный файл в разработке." << endl;
+}
+
+void sortStudents()
+{
+    cout << "Функция сортировки в разработке." << endl;
+}
+
+int searchStudent()
+{
+    return 0;
+}
