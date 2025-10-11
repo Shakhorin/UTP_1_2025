@@ -21,6 +21,8 @@ struct Student
 
 // Область объявления переменных
 Student Students[10]{};
+int userType{};
+
 // Конец области переменных
 
 // Область объявления функций
@@ -28,24 +30,41 @@ int getLoginPass();
 int loadChekUserData(string login,string password);
 void userMenu();
 void adminMenu();
+void loadFromTextFile();
+void fixStreamState();
+int getCorrectValue();
 // Конец область функций
 
 int main()
 {
     system("chcp 65001");
-    const int USERTYPE = getLoginPass();
+    getLoginPass();
     int userChoice{};
-    switch (USERTYPE)
+    switch (userType)
     {
     case 1:
         do
         {
             userMenu();
-            cin >> userChoice;
-            cin.ignore();
+            int userChoice = getCorrectValue();
             switch (userChoice)
             {
                 case 1:
+                    loadFromTextFile();
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    break;
+                case 6:
+                    break;
+                case 7:
+                    break;
+                case 8:
                     break;
                 default:
                     cout << "Введен неверный номер" << endl;
@@ -143,7 +162,7 @@ int loadChekUserData(string login, string password)
         if (passwordsUsers[distance(loginsUsers.begin(),find(loginsUsers.begin(),loginsUsers.end(),login))] == password)
         {
             cout << "Вы авторизованы как пользователь" << endl;
-            return 1;
+            userType = 1;
         }else
         {
             cout << "Неверный пароль. Повторите попытку" << endl;
@@ -154,7 +173,7 @@ int loadChekUserData(string login, string password)
         if (passwordsAdmin[distance(loginsAdmin.begin(),find(loginsAdmin.begin(),loginsAdmin.end(),login))] == password)
         {
             cout << "Вы авторизованы как администратор" << endl;
-            return 2;
+            userType = 2;
         }else
         {
             cout << "Неверный пароль. Повторите попытку" << endl;
@@ -165,7 +184,8 @@ int loadChekUserData(string login, string password)
         cout << "Неверный логин. Повторите попытку" << endl;
         getLoginPass();
     }
-    return 0;
+    if (userType != 1 and userType != 2) userType = 0;
+    return userType;
 }
 void userMenu()
 {
@@ -179,4 +199,57 @@ void userMenu()
     cout << "7. Сортировка данных" << endl;
     cout << "8. Выход" << endl;
     cout << "\nВведите номер команды: ";
+}
+void loadFromTextFile()
+{
+    cout << "Введите полный адрес файла (c/user/documents/doc.txt)" << endl;
+    string linkFile{};
+    cin >> linkFile;
+    cin.ignore();
+    // Проверка формата
+    reverse(linkFile.begin(),linkFile.end());
+    int index{};
+    try
+    {
+        string formatFile = string(1,linkFile.at(index++)) + string(1,linkFile.at(index++)) + string(1,linkFile.at(index++)) + string(1,linkFile.at(index++));
+        reverse(linkFile.begin(),linkFile.end());
+        if (formatFile == ".txt")
+        {
+            ifstream txtFile (linkFile);
+            if (txtFile.is_open())
+            {
+                cout << "Файл открыт успешно" << endl;
+            }else
+            {
+                cout << "Ошибка открытия файла! Проверьте наличие файла и правильность пути." << endl;
+            }
+        }else
+        {
+            cout << "Неверное расширение файла. Файл должен быть в формате .txt" << endl;
+        }
+    }catch (...)
+    {
+        cout << "Ошибка! Неверный формат." << endl;
+    }
+}
+void fixStreamState() {
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+}
+
+int getCorrectValue() {
+    int n{};
+    bool isNotOk{};
+
+    do {
+        isNotOk = false;
+        if ((cin >> n).fail()) {
+            fixStreamState();
+            cout << "Неверный тип данных!" << endl;
+            cout << "Введите число(int): " << endl;
+            isNotOk = true;
+        }
+    } while (isNotOk);
+
+    return n;
 }
