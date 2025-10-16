@@ -4,20 +4,22 @@
 #include <string>
 #include <limits>
 #include <algorithm>
+#include <functional>
+#include <memory>
 #include <sstream>
 
 using namespace std;
 
 struct Student
 {
-    int id;
-    string lastname;
-    string name;
-    string fathername;
-    int level;
-    string group;
-    int first_year;
-    int marks[5];
+    int id{};
+    string lastname{};
+    string name{};
+    string fathername{};
+    int level{};
+    string group{};
+    int first_year{};
+    int marks[5]{};
 };
 
 // Область объявления переменных
@@ -249,26 +251,65 @@ void parsingText(vector<string> txtLines)
     int indexString{};
     for (string txtString :txtLines)
     {
+        vector<string> dataOneStudent{};
         if (indexString++ == 0) continue;
         stringstream ss(txtString);
         string word{};
-        while (getline(ss, word, '\t'))
+        while (getline(ss, word, ';'))
         {
             if (!word.empty()) {
                 dataOneStudent.push_back(word);
             }
         }
+        if (size(dataOneStudent) != 11)
+        {
+            cout << "Неверно отформатирована строка:" << indexString - 1 << endl;
+            cout << txtString << endl;
+            continue;
+        }
+
         addNewStudent(dataOneStudent);
     }
 }
 void addNewStudent(vector<string> dataOneStudent)
 {
-    if (dataOneStudent.size() != 12)
+    if (dataOneStudent.size() != 11)
     {
         cout << "В файле неверный формат" << endl;
+        return;
+
+    }
+    if (FreeId.empty())
+    {
+        cout << "Достигнуто максимальное количество студентов в базе" << endl;
+        return;
+    }
+    sort(FreeId.begin(), FreeId.end());
+    int studentId{FreeId[0]};
+    FreeId.erase(FreeId.begin());
+    int indexInVec{};
+    try
+    {
+        Student newStudent{};
+        newStudent.id = studentId;
+        newStudent.lastname = dataOneStudent[indexInVec++];
+        newStudent.name = dataOneStudent[indexInVec++];
+        newStudent.fathername = dataOneStudent[indexInVec++];
+        newStudent.level = stoi(dataOneStudent[indexInVec++]);
+        newStudent.group = dataOneStudent[indexInVec++];
+        newStudent.first_year = stoi(dataOneStudent[indexInVec++]);
+        newStudent.marks[0] = stoi(dataOneStudent[indexInVec++]);
+        newStudent.marks[1] = stoi(dataOneStudent[indexInVec++]);
+        newStudent.marks[2] = stoi(dataOneStudent[indexInVec++]);
+        newStudent.marks[3] = stoi(dataOneStudent[indexInVec++]);
+        newStudent.marks[4] = stoi(dataOneStudent[indexInVec++]);
+        Students[studentId-1] = newStudent;
+        cout << "Студент добавлен c ID:" << newStudent.id << endl;
+    }catch (...)
+    {
+        cout << "Данные в файле в неверном формате" << endl;
     }
 }
-
 void fixStreamState() {
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
