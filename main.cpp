@@ -5,6 +5,7 @@
 #include <limits>
 #include <algorithm>
 #include <functional>
+#include <iomanip>
 #include <memory>
 #include <sstream>
 
@@ -18,7 +19,7 @@ struct Student
     string fathername{};
     int level{};
     string group{};
-    int first_year{};
+    int firstYear{};
     int marks[5]{};
 };
 
@@ -38,7 +39,9 @@ void loadFromTextFile();
 void parsingText(vector<string>);
 void fixStreamState();
 int getCorrectValue();
+// Функции взаимодействия с базой
 void addNewStudent(vector<string>);
+void printAllDataFromBase();
 // Конец область функций
 
 int main()
@@ -49,6 +52,7 @@ int main()
     switch (UserType)
     {
     case 1:
+        // Пользователь
         do
         {
             userMenu();
@@ -61,6 +65,7 @@ int main()
                 case 2:
                     break;
                 case 3:
+                    printAllDataFromBase();
                     break;
                 case 4:
                     break;
@@ -78,7 +83,43 @@ int main()
         }while(userChoice != 8);
         break;
     case 2:
-        cout << "Администратор" << endl;
+        // Администратор
+        do
+        {
+            adminMenu();
+            int userChoice = getCorrectValue();
+            switch (userChoice)
+            {
+            case 1:
+                break;
+            case 2:
+                loadFromTextFile();
+                break;
+            case 3:
+                break;
+            case 4:
+                printAllDataFromBase();
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+            case 7:
+                break;
+            case 8:
+                break;
+            case 9:
+                break;
+            case 10:
+                break;
+            case 11:
+                break;
+            case 12:
+                break;
+            default:
+                cout << "Введен неверный номер" << endl;
+            }
+        }while(userChoice != 12);
         break;
     default:
         cout << "Ошибка авторизации" << endl;
@@ -88,6 +129,66 @@ int main()
 }
 
 // Область реализации функций
+void adminMenu()
+{
+    cout <<"\n";
+    cout << "========== СИСТЕМА УПРАВЛЕНИЯ СТУДЕНТАМИ ==========\n" << endl;
+    cout << "1. Ввод информации с клавиатуры" << endl;
+    cout << "2. Загрузка из текстового файла" << endl;
+    cout << "3. Загрузка из бинарного файла" << endl;
+    cout << "4. Вывод данных в виде таблицы" << endl;
+    cout << "5. Выполнение запроса (поиск двоечников)" << endl;
+    cout << "6. Экспорт в текстовый файл" << endl;
+    cout << "7. Конвертация в бинарный файл" << endl;
+    cout << "8. Добавление записи" << endl;
+    cout << "9. Изменение записи" << endl;
+    cout << "10. Удаление записи" << endl;
+    cout << "11. Сортировка данных" << endl;
+    cout << "12. Выход" << endl;
+    cout << "\nВведите номер команды: ";
+}
+void printAllDataFromBase()
+{
+    bool arrayIsEmpty = FreeId.size() == 10;
+    if (arrayIsEmpty)
+    {
+        cout << "База пуста" << endl;
+        return;
+    }
+    cout << string(42, ' ');
+    cout << "===== СТУДЕНТЫ =====" << endl;
+    cout << endl;
+
+    // Заголовок таблицы
+    cout << " | ";
+    cout << setw(4) << "ID" << " | ";
+    cout << setw(12) << "     Фамилия" << " | ";
+    cout << setw(12) << "         Имя" << " | ";
+    cout << setw(12) << "    Отчество" << " | ";
+    cout << setw(4) << "Курс" << " | ";
+    cout << setw(10) << "    Группа" << " | ";
+    cout << setw(15) << "Год поступления" << " | ";
+    cout << setw(10) << "   Оценки" << " | " << endl;
+
+    // Разделитель
+    cout << string(104, '=') << endl;
+
+    // Данные студентов
+    for (Student student: Students)
+    {
+        if (student.id == 0) continue;
+        cout << string(104, '-') << endl;
+        cout << setw(3) << " | ";
+        cout << setw(4) << student.id << " | ";
+        cout << setw(12) << student.lastname << " | ";
+        cout << setw(12) << student.name << " | ";
+        cout << setw(12) << student.fathername << " | ";
+        cout << setw(4) << student.level << " | ";
+        cout << setw(10) << student.group << " | ";
+        cout << setw(15) << student.firstYear << " | ";
+        cout << student.marks[0] << ";" << student.marks[1] << ";" << student.marks[2] << ";" << student.marks[3] << ";" << student.marks[4] << " | " << endl;
+    }
+}
 int getLoginPass()
 {
     string login{},password{};
@@ -195,6 +296,7 @@ int loadChekUserData(string login, string password)
 }
 void userMenu()
 {
+    cout <<"\n";
     cout << "========== СИСТЕМА УПРАВЛЕНИЯ СТУДЕНТАМИ ==========\n" << endl;
     cout << "1. Загрузка из текстового файла" << endl;
     cout << "2. Загрузка из бинарного файла" << endl;
@@ -297,7 +399,7 @@ void addNewStudent(vector<string> dataOneStudent)
         newStudent.fathername = dataOneStudent[indexInVec++];
         newStudent.level = stoi(dataOneStudent[indexInVec++]);
         newStudent.group = dataOneStudent[indexInVec++];
-        newStudent.first_year = stoi(dataOneStudent[indexInVec++]);
+        newStudent.firstYear = stoi(dataOneStudent[indexInVec++]);
         newStudent.marks[0] = stoi(dataOneStudent[indexInVec++]);
         newStudent.marks[1] = stoi(dataOneStudent[indexInVec++]);
         newStudent.marks[2] = stoi(dataOneStudent[indexInVec++]);
