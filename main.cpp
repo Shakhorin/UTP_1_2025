@@ -339,6 +339,7 @@ void loadFromKeyboard()
         return;
     }
     vector<string> dataOneStudent{};
+    cout << "ВНИМАНИЕ! ДЛЯ ВВОДА ДАННЫХ ИСПОЛЬЗУЙТЕ ЛАТИНСКИЙ АЛФАВИТ" << endl;
     cout << "Введите фамилию(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
     string lastname{};
     lastname = getCorrectFIO();
@@ -704,7 +705,7 @@ string getCorrectGroup()
     do {
         isNotOk = false;
         cin >> n;
-        regex pattern("[^A-ZА-Я0-9-]");
+        regex pattern("[^(A-ZА-Я0-9-)]");
         if (n.length() < 2 or regex_search(n, pattern)) {
             fixStreamState();
             cout << "Неверное значение!" << endl;
