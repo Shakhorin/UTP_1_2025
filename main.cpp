@@ -131,6 +131,7 @@ int main()
                 case 9:
                     break;
                 case 10:
+                    delStudentFromBase();
                     break;
                 case 11:
                     break;
@@ -338,35 +339,35 @@ void loadFromKeyboard()
         return;
     }
     vector<string> dataOneStudent{};
-    cout << "Введите фамилию" << endl;
+    cout << "Введите фамилию(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
     string lastname{};
     lastname = getCorrectFIO();
     dataOneStudent.push_back(lastname);
-    cout << "Введите имя" << endl;
+    cout << "Введите имя(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
     string name{};
     name = getCorrectFIO();
     dataOneStudent.push_back(name);
-    cout << "Введите отчество" << endl;
+    cout << "Введите отчество(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
     string fathername{};
     fathername = getCorrectFIO();
     dataOneStudent.push_back(fathername);
-    cout << "Введите курс" << endl;
+    cout << "Введите курс(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
     int level_i{};
     string level{};
     level_i = getCorrectLevel();
     level = to_string(level_i);
     dataOneStudent.push_back(level);
-    cout << "Введите группу" << endl;
+    cout << "Введите группу заглавными буквами(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
     string group{};
     group = getCorrectGroup();
     dataOneStudent.push_back(group);
-    cout << "Введите год поступления" << endl;
+    cout << "Введите год поступления(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
     string firstYear{};
     int firstYear_i{};
     firstYear_i = getCorrectFirstYear();
     firstYear = to_string(firstYear_i);
     dataOneStudent.push_back(firstYear);
-    cout << "Введите 5 оценок" << endl;
+    cout << "Введите 5 оценок(Если будет введена строка с пробелом, то будут использованы первые пять оценок)" << endl;
     int marks[5]{};
     for (int i = 0; i < 5; i++)
     {
@@ -374,6 +375,7 @@ void loadFromKeyboard()
         string mark = to_string(marks[i]);
         dataOneStudent.push_back(mark);
     }
+    fixStreamState();
     addNewStudent(dataOneStudent);
 }
 // Функции взаибодействия с массивом
@@ -435,7 +437,7 @@ void delStudentFromBase()
         printAllDataFromBase();
         cout << "Введите ID студента для удаления" << endl;
         idForDel = getCorrectId();
-        cout << "Вы действительно хотите удалить студента с ID:" << idForDel << "?(y/n)" << endl;
+        cout << "Вы действительно хотите удалить студента с ID:" << idForDel << "?(y/n)(Если вы введете слово, будет использован первый символ)" << endl;
         accept = getCorrectChar();
         flagExit = true;
     }while (accept == 'n' or accept == 'N');
@@ -444,6 +446,7 @@ void delStudentFromBase()
     {
         if (student.id == idForDel)
         {
+            FreeId.push_back(idForDel);
             Student newStudent{};
             Students[indexStudentForDel] = newStudent;
             break;
@@ -574,7 +577,7 @@ int getCorrectValue() {
             isNotOk = true;
         }
     } while (isNotOk);
-
+    fixStreamState();
     return n;
 }
 bool freeIdCheck()
@@ -591,7 +594,6 @@ int getCorrectMark()
 {
     int n{};
     bool isNotOk{};
-
     do {
         isNotOk = false;
         if ((cin >> n).fail() or (n < 2 or n > 5)) {
@@ -601,7 +603,6 @@ int getCorrectMark()
             isNotOk = true;
         }
     } while (isNotOk);
-
     return n;
 }
 int getCorrectLevel()
@@ -618,14 +619,13 @@ int getCorrectLevel()
             isNotOk = true;
         }
     } while (isNotOk);
-
+    fixStreamState();
     return n;
 }
 int getCorrectFirstYear()
 {
     int n{};
     bool isNotOk{};
-
     do {
         isNotOk = false;
         if ((cin >> n).fail() or (n < 2000 or n > 2025)) {
@@ -635,7 +635,7 @@ int getCorrectFirstYear()
             isNotOk = true;
         }
     } while (isNotOk);
-
+    fixStreamState();
     return n;
 }
 int getCorrectId()
@@ -645,7 +645,7 @@ int getCorrectId()
 
     do {
         isNotOk = true;
-        if ((cin >> n).fail() or n < 1 or n > 10) {
+        if ((cin >> n).fail() or n < 1 or n > 10 or count(FreeId.begin(), FreeId.end(),n) != 0) {
             fixStreamState();
             cout << "Неверное значение!" << endl;
             cout << "Введите ID: " << endl;
@@ -660,7 +660,7 @@ int getCorrectId()
             }
         }
     } while (isNotOk);
-
+    fixStreamState();
     return n;
 }
 char getCorrectChar()
@@ -676,6 +676,7 @@ char getCorrectChar()
             isNotOk = true;
         }
     } while (isNotOk);
+    fixStreamState();
     return n;
 }
 string getCorrectFIO()
@@ -685,7 +686,7 @@ string getCorrectFIO()
     do {
         isNotOk = false;
         cin >> n;
-        regex pattern("[^A-za-zА-яа-я-']");
+        regex pattern("[^A-Za-zА-Яа-я]");
         if (n.length() < 2 or regex_search(n, pattern)) {
             fixStreamState();
             cout << "Неверное значение!" << endl;
@@ -693,6 +694,7 @@ string getCorrectFIO()
             isNotOk = true;
         }
     } while (isNotOk);
+    fixStreamState();
     return n;
 }
 string getCorrectGroup()
@@ -702,7 +704,7 @@ string getCorrectGroup()
     do {
         isNotOk = false;
         cin >> n;
-        regex pattern("[^A-ZА-Я1-9-]");
+        regex pattern("[^A-ZА-Я0-9-]");
         if (n.length() < 2 or regex_search(n, pattern)) {
             fixStreamState();
             cout << "Неверное значение!" << endl;
@@ -710,6 +712,7 @@ string getCorrectGroup()
             isNotOk = true;
         }
     } while (isNotOk);
+    fixStreamState();
     return n;
 }
 void studentsWithBadMarksChek()
