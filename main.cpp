@@ -627,6 +627,7 @@ void printStudentsWithBadMarks(vector<int> idStudentsWithBadMarks)
 void getIdStudentForChange()
 {
     printAllDataFromBase();
+    if (FreeId.size() == 10) return;
     cout << "Введите id студента, данные которого вы хотите изменить." << endl;
     int idStudentForChange{};
     idStudentForChange = getCorrectId();
