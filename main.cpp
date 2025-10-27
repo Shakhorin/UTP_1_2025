@@ -50,11 +50,14 @@ char getCorrectChar();
 string getCorrectFIO();
 string getCorrectGroup();
 void studentsWithBadMarksChek();
+void getIdStudentForChange();
+void loadChangeDataFromKeyboard(int);
 // Функции взаимодействия с базой
 void addNewStudent(vector<string>);
 void printAllDataFromBase();
 void printStudentsWithBadMarks(vector<int>);
 void delStudentFromBase();
+void changeStudentData(vector<string>,int);
 // Конец область функций
 
 int main()
@@ -127,20 +130,19 @@ int main()
                 case 7:
                     break;
                 case 8:
+                    getIdStudentForChange();
                     break;
                 case 9:
-                    break;
-                case 10:
                     delStudentFromBase();
                     break;
-                case 11:
+                case 10:
                     break;
-                case 12:
+                case 11:
                     break;
                 default:
                     cout << "Введен неверный номер" << endl;
                 }
-            }while(adminChoice != 12);
+            }while(adminChoice != 11);
             break;
         }
     default:
@@ -270,11 +272,10 @@ void adminMenu()
     cout << "5. Выполнение запроса (поиск двоечников)" << endl;
     cout << "6. Экспорт в текстовый файл" << endl;
     cout << "7. Конвертация в бинарный файл" << endl;
-    cout << "8. Добавление записи" << endl;
-    cout << "9. Изменение записи" << endl;
-    cout << "10. Удаление записи" << endl;
-    cout << "11. Сортировка данных" << endl;
-    cout << "12. Выход" << endl;
+    cout << "8. Изменение записи" << endl;
+    cout << "9. Удаление записи" << endl;
+    cout << "10. Сортировка данных" << endl;
+    cout << "11. Выход" << endl;
     cout << "\nВведите номер команды: ";
 }
 void userMenu()
@@ -379,6 +380,70 @@ void loadFromKeyboard()
     fixStreamState();
     addNewStudent(dataOneStudent);
 }
+void loadChangeDataFromKeyboard(int idStudentForChange)
+{
+    Student studentForChange{};
+    for (Student student : Students)
+    {
+        if (student.id == idStudentForChange)
+        {
+            studentForChange = student;
+            break;
+        }
+    }
+    vector<string> dataOneStudent{};
+    cout << "ВНИМАНИЕ! ДЛЯ ВВОДА ДАННЫХ ИСПОЛЬЗУЙТЕ ЛАТИНСКИЙ АЛФАВИТ" << endl;
+    cout << "Введите фамилию(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+    cout << "Старое значение:" << studentForChange.lastname << endl;
+    string lastname{};
+    lastname = getCorrectFIO();
+    dataOneStudent.push_back(lastname);
+    cout << "Введите имя(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+    cout << "Старое значение:" << studentForChange.name << endl;
+    string name{};
+    name = getCorrectFIO();
+    dataOneStudent.push_back(name);
+    cout << "Введите отчество(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+    cout << "Старое значение:" << studentForChange.fathername << endl;
+    string fathername{};
+    fathername = getCorrectFIO();
+    dataOneStudent.push_back(fathername);
+    cout << "Введите курс(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+    cout << "Старое значение:" << studentForChange.level << endl;
+    int level_i{};
+    string level{};
+    level_i = getCorrectLevel();
+    level = to_string(level_i);
+    dataOneStudent.push_back(level);
+    cout << "Введите группу заглавными буквами(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+    cout << "Старое значение:" << studentForChange.group << endl;
+    string group{};
+    group = getCorrectGroup();
+    dataOneStudent.push_back(group);
+    cout << "Введите год поступления(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+    cout << "Старое значение:" << studentForChange.firstYear << endl;
+    string firstYear{};
+    int firstYear_i{};
+    firstYear_i = getCorrectFirstYear();
+    firstYear = to_string(firstYear_i);
+    dataOneStudent.push_back(firstYear);
+    cout << "Введите 5 оценок(Если будет введена строка с пробелом, то будут использованы первые пять оценок)" << endl;
+    cout << "Старое значение: " ;
+    for (int mark : studentForChange.marks)
+    {
+        cout << mark << " ";
+    }
+    cout << endl;
+    int marks[5]{};
+    for (int i = 0; i < 5; i++)
+    {
+        marks[i] = getCorrectMark();
+        string mark = to_string(marks[i]);
+        dataOneStudent.push_back(mark);
+    }
+    fixStreamState();
+    changeStudentData(dataOneStudent, idStudentForChange);
+}
 // Функции взаибодействия с массивом
 void addNewStudent(vector<string> dataOneStudent)
 {
@@ -453,6 +518,31 @@ void delStudentFromBase()
             break;
         }
         indexStudentForDel++;
+    }
+}
+void changeStudentData(vector<string> updataOneStudent, int idStudentForChange)
+{
+    int indexInVec{};
+    try
+    {
+        Student newStudent{};
+        newStudent.id = idStudentForChange;
+        newStudent.lastname = updataOneStudent[indexInVec++];
+        newStudent.name = updataOneStudent[indexInVec++];
+        newStudent.fathername = updataOneStudent[indexInVec++];
+        newStudent.level = stoi(updataOneStudent[indexInVec++]);
+        newStudent.group = updataOneStudent[indexInVec++];
+        newStudent.firstYear = stoi(updataOneStudent[indexInVec++]);
+        newStudent.marks[0] = stoi(updataOneStudent[indexInVec++]);
+        newStudent.marks[1] = stoi(updataOneStudent[indexInVec++]);
+        newStudent.marks[2] = stoi(updataOneStudent[indexInVec++]);
+        newStudent.marks[3] = stoi(updataOneStudent[indexInVec++]);
+        newStudent.marks[4] = stoi(updataOneStudent[indexInVec++]);
+        Students[idStudentForChange-1] = newStudent;
+        cout << "Студент изменен c ID:" << newStudent.id << endl;
+    }catch (...)
+    {
+        cout << "Данные в файле в неверном формате" << endl;
     }
 }
 // Функции вывода
@@ -534,6 +624,23 @@ void printStudentsWithBadMarks(vector<int> idStudentsWithBadMarks)
     }
 }
 // Функции прочие
+void getIdStudentForChange()
+{
+    printAllDataFromBase();
+    cout << "Введите id студента, данные которого вы хотите изменить." << endl;
+    int idStudentForChange{};
+    idStudentForChange = getCorrectId();
+    cout << "Вы действительно хотите изменить данные студента с id:" << idStudentForChange << "? (y/n)" <<  endl;
+    char acceptAdminForChange{};
+    acceptAdminForChange = getCorrectChar();
+    if (acceptAdminForChange != 'y' and acceptAdminForChange != 'Y')
+    {
+        return;
+    }else
+    {
+        loadChangeDataFromKeyboard(idStudentForChange);
+    }
+}
 void parsingText(vector<string> txtLines)
 {
     vector<string> dataOneStudent{};
@@ -687,7 +794,7 @@ string getCorrectFIO()
     do {
         isNotOk = false;
         cin >> n;
-        regex pattern("[^A-Za-zА-Яа-я]");
+        regex pattern("[^A-Za-z]");
         if (n.length() < 2 or regex_search(n, pattern)) {
             fixStreamState();
             cout << "Неверное значение!" << endl;
@@ -705,7 +812,7 @@ string getCorrectGroup()
     do {
         isNotOk = false;
         cin >> n;
-        regex pattern("[^(A-ZА-Я0-9-)]");
+        regex pattern("[^(A-Z0-9-)]");
         if (n.length() < 2 or regex_search(n, pattern)) {
             fixStreamState();
             cout << "Неверное значение!" << endl;
