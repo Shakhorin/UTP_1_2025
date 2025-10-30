@@ -9,6 +9,7 @@
 #include <memory>
 #include <sstream>
 #include <regex>
+#include <numeric>
 
 using namespace std;
 
@@ -58,6 +59,8 @@ void printAllDataFromBase();
 void printStudentsWithBadMarks(vector<int>);
 void delStudentFromBase();
 void changeStudentData(vector<string>,int);
+void preSortDataFromBase();
+void sortStudent(int,int,vector<Student>);
 // Конец область функций
 
 int main()
@@ -559,6 +562,191 @@ void changeStudentData(vector<string> updataOneStudent, int idStudentForChange)
     }catch (...)
     {
         cout << "Данные в файле в неверном формате" << endl;
+    }
+}
+void preSortDataFromBase(){
+    vector <Student> studentsForSort{};
+    for (Student students : Students)
+    {
+        studentsForSort.push_back(students);
+    }
+    if (studentsForSort.empty())
+    {
+        cout << "База даннных пуста. Сортировка невозможна." << endl;
+        return;
+    }
+    cout << "Выберите направление сортировки" << endl;
+    cout << "1 - В порядке возрастания (А-Я)" << endl;
+    cout << "2 - В порядке убывания (Я-А)" << endl;
+    int choiceDirection{};
+    bool exitControl{true};
+    do
+    {
+        choiceDirection = getCorrectValue();
+        exitControl = false;
+        switch (choiceDirection)
+        {
+            case 1:
+                {
+                    cout << "Выберите поле для сортировки" << endl;
+                    cout << "1 - ID" << endl;
+                    cout << "2 - Фамилия" << endl;
+                    cout << "3 - Имя" << endl;
+                    cout << "4 - Отчество" << endl;
+                    cout << "5 - Курс" << endl;
+                    cout << "6 - Группа" << endl;
+                    cout << "7 - Год поступления" << endl;
+                    cout << "8 - Оценки" << endl;
+                    int choiceSortField{};
+                    bool exitControlBy1{false};
+                    do
+                    {
+                        choiceSortField = getCorrectValue();
+                        exitControlBy1 = false;
+                        if (choiceSortField < 1 or choiceSortField > 8) exitControl = true;
+                    }while (exitControlBy1);
+                    sortStudent(choiceDirection,choiceSortField,studentsForSort);
+                    break;
+                }
+            case 2:
+                {
+                    cout << "Выберите поле для сортировки" << endl;
+                    cout << "1 - ID" << endl;
+                    cout << "2 - Фамилия" << endl;
+                    cout << "3 - Имя" << endl;
+                    cout << "4 - Отчество" << endl;
+                    cout << "5 - Курс" << endl;
+                    cout << "6 - Группа" << endl;
+                    cout << "7 - Год поступления" << endl;
+                    cout << "8 - Оценки" << endl;
+                    int choiceSortField{};
+                    bool exitControlBy2{false};
+                    do
+                    {
+                        choiceSortField = getCorrectValue();
+                        exitControlBy2 = false;
+                        if (choiceSortField < 1 or choiceSortField > 8) exitControl = true;
+                    }while (exitControlBy2);
+                    sortStudent(choiceDirection,choiceSortField,studentsForSort);
+                    break;
+                }
+            default:
+                {
+                    exitControl = true;
+                }
+        }
+    }while (exitControl);
+}
+void sortStudent(int sortDirection, int sortField, vector<Student> studentsForSort)
+{
+    switch (sortDirection)
+    {
+        case 1:
+            {
+                switch (sortField)
+                {
+                    case 1:
+                        {
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.id < b.id;});
+                            break;
+                        }
+                    case 2:
+                        {
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.lastname < b.lastname;});
+                            break;
+                        }
+                    case 3:
+                        {
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.name < b.name;});
+                            break;
+                        }
+                    case 4:
+                        {
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.fathername < b.fathername;});
+                            break;
+                        }
+                    case 5:
+                        {
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.level < b.level;});
+                            break;
+                        }
+                    case 6:
+                        {
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.group < b.group;});
+                            break;
+                        }
+                    case 7:
+                        {
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.firstYear < b.firstYear;});
+                            break;
+                        }
+                    case 8:
+                        {
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.marks < b.marks;});
+                            break;
+                        }
+                    default:
+                        {
+                            return;
+                        }
+                }
+                break;
+            }
+        case 2:
+            {
+                switch (sortField)
+                {
+                    case 1:
+                        {
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.id > b.id;});
+                            break;
+                        }
+                    case 2:
+                        {
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.lastname > b.lastname;});
+                            break;
+                        }
+                    case 3:
+                        {
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.name > b.name;});
+                            break;
+                        }
+                    case 4:
+                        {
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.fathername > b.fathername;});
+                            break;
+                        }
+                    case 5:
+                        {
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.level > b.level;});
+                            break;
+                        }
+                    case 6:
+                        {
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.group > b.group;});
+                            break;
+                        }
+                    case 7:
+                        {
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.firstYear > b.firstYear;});
+                            break;
+                        }
+                    case 8:
+                        {
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.marks > b.marks;});
+                            break;
+                        }
+                    default:
+                        {
+                            return;
+                        }
+                }
+                break;
+            }
+        default:
+            {
+                return;
+            }
     }
 }
 // Функции вывода
