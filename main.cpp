@@ -10,6 +10,7 @@
 #include <sstream>
 #include <regex>
 #include <numeric>
+#include <cstring>
 
 using namespace std;
 
@@ -53,10 +54,13 @@ string getCorrectGroup();
 void studentsWithBadMarksChek();
 void getIdStudentForChange();
 void loadChangeDataFromKeyboard(int);
+string toLower(string&);
+int getAverage(int []);
 // Функции взаимодействия с базой
 void addNewStudent(vector<string>);
 void printAllDataFromBase();
-void printStudentsWithBadMarks(vector<int>);
+void printStudentsFromVector(vector<Student>);
+void printStudentsFromVector(vector<int>);
 void delStudentFromBase();
 void changeStudentData(vector<string>,int);
 void preSortDataFromBase();
@@ -95,6 +99,7 @@ int main()
                 case 6:
                     break;
                 case 7:
+                    preSortDataFromBase();
                     break;
                 case 8:
                     break;
@@ -139,6 +144,7 @@ int main()
                     delStudentFromBase();
                     break;
                 case 10:
+                    preSortDataFromBase();
                     break;
                 case 11:
                     break;
@@ -578,6 +584,7 @@ void preSortDataFromBase(){
     cout << "Выберите направление сортировки" << endl;
     cout << "1 - В порядке возрастания (А-Я)" << endl;
     cout << "2 - В порядке убывания (Я-А)" << endl;
+    cout << "Введите номер:" << endl;
     int choiceDirection{};
     bool exitControl{true};
     do
@@ -597,6 +604,7 @@ void preSortDataFromBase(){
                     cout << "6 - Группа" << endl;
                     cout << "7 - Год поступления" << endl;
                     cout << "8 - Оценки" << endl;
+                    cout << "Введите номер:" << endl;
                     int choiceSortField{};
                     bool exitControlBy1{false};
                     do
@@ -619,6 +627,7 @@ void preSortDataFromBase(){
                     cout << "6 - Группа" << endl;
                     cout << "7 - Год поступления" << endl;
                     cout << "8 - Оценки" << endl;
+                    cout << "Введите номер:" << endl;
                     int choiceSortField{};
                     bool exitControlBy2{false};
                     do
@@ -632,6 +641,7 @@ void preSortDataFromBase(){
                 }
             default:
                 {
+                    cout << "Введен неверный номер. Повторите попытку." << endl;
                     exitControl = true;
                 }
         }
@@ -648,41 +658,49 @@ void sortStudent(int sortDirection, int sortField, vector<Student> studentsForSo
                     case 1:
                         {
                             sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.id < b.id;});
+                            printStudentsFromVector(studentsForSort);
                             break;
                         }
                     case 2:
                         {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.lastname < b.lastname;});
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return toLower(a.lastname) < toLower(b.lastname);});
+                            printStudentsFromVector(studentsForSort);
                             break;
                         }
                     case 3:
                         {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.name < b.name;});
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return toLower(a.name) < toLower(b.name);});
+                            printStudentsFromVector(studentsForSort);
                             break;
                         }
                     case 4:
                         {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.fathername < b.fathername;});
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return toLower(a.fathername) < toLower(b.fathername);});
+                            printStudentsFromVector(studentsForSort);
                             break;
                         }
                     case 5:
                         {
                             sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.level < b.level;});
+                            printStudentsFromVector(studentsForSort);
                             break;
                         }
                     case 6:
                         {
                             sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.group < b.group;});
+                            printStudentsFromVector(studentsForSort);
                             break;
                         }
                     case 7:
                         {
                             sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.firstYear < b.firstYear;});
+                            printStudentsFromVector(studentsForSort);
                             break;
                         }
                     case 8:
                         {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.marks < b.marks;});
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return getAverage(a.marks) < getAverage(b.marks);});
+                            printStudentsFromVector(studentsForSort);
                             break;
                         }
                     default:
@@ -699,41 +717,49 @@ void sortStudent(int sortDirection, int sortField, vector<Student> studentsForSo
                     case 1:
                         {
                             sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.id > b.id;});
+                            printStudentsFromVector(studentsForSort);
                             break;
                         }
                     case 2:
                         {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.lastname > b.lastname;});
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return toLower(a.lastname) > toLower(b.lastname);});
+                            printStudentsFromVector(studentsForSort);
                             break;
                         }
                     case 3:
                         {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.name > b.name;});
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return toLower(a.name) > toLower(b.name);});
+                            printStudentsFromVector(studentsForSort);
                             break;
                         }
                     case 4:
                         {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.fathername > b.fathername;});
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return toLower(a.fathername) >toLower( b.fathername);});
+                            printStudentsFromVector(studentsForSort);
                             break;
                         }
                     case 5:
                         {
                             sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.level > b.level;});
+                            printStudentsFromVector(studentsForSort);
                             break;
                         }
                     case 6:
                         {
                             sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.group > b.group;});
+                            printStudentsFromVector(studentsForSort);
                             break;
                         }
                     case 7:
                         {
                             sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.firstYear > b.firstYear;});
+                            printStudentsFromVector(studentsForSort);
                             break;
                         }
                     case 8:
                         {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.marks > b.marks;});
+                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return getAverage(a.marks) > getAverage(b.marks);});
+                            printStudentsFromVector(studentsForSort);
                             break;
                         }
                     default:
@@ -791,6 +817,8 @@ void printAllDataFromBase()
         cout << setw(15) << student.firstYear << " | ";
         cout << student.marks[0] << ";" << student.marks[1] << ";" << student.marks[2] << ";" << student.marks[3] << ";" << student.marks[4] << " | " << endl;
     }
+    cout << "Нажмите кнопку, чтобы продолжить." << endl;
+    cin.get();
 }
 void printStudentsWithBadMarks(vector<int> idStudentsWithBadMarks)
 {
@@ -826,6 +854,52 @@ void printStudentsWithBadMarks(vector<int> idStudentsWithBadMarks)
         cout << setw(15) << student.firstYear << " | ";
         cout << student.marks[0] << ";" << student.marks[1] << ";" << student.marks[2] << ";" << student.marks[3] << ";" << student.marks[4] << " | " << endl;
     }
+    cout << "Нажмите кнопку, чтобы продолжить." << endl;
+    cin.get();
+}
+void printStudentsFromVector(vector<Student> studentsSortList)
+{
+    bool arrayIsEmpty = FreeId.size() == 10;
+    if (arrayIsEmpty)
+    {
+        cout << "База пуста" << endl;
+        return;
+    }
+    cout << string(42, ' ');
+    cout << "===== СТУДЕНТЫ =====" << endl;
+    cout << endl;
+
+    // Заголовок таблицы
+    cout << " | ";
+    cout << setw(4) << "ID" << " | ";
+    cout << setw(12) << "     Фамилия" << " | ";
+    cout << setw(12) << "         Имя" << " | ";
+    cout << setw(12) << "    Отчество" << " | ";
+    cout << setw(4) << "Курс" << " | ";
+    cout << setw(10) << "    Группа" << " | ";
+    cout << setw(15) << "Год поступления" << " | ";
+    cout << setw(10) << "   Оценки" << " | " << endl;
+
+    // Разделитель
+    cout << string(104, '=') << endl;
+
+    // Данные студентов
+    for (Student student: studentsSortList)
+    {
+        if (student.id == 0) continue;
+        cout << string(104, '-') << endl;
+        cout << setw(3) << " | ";
+        cout << setw(4) << student.id << " | ";
+        cout << setw(12) << student.lastname << " | ";
+        cout << setw(12) << student.name << " | ";
+        cout << setw(12) << student.fathername << " | ";
+        cout << setw(4) << student.level << " | ";
+        cout << setw(10) << student.group << " | ";
+        cout << setw(15) << student.firstYear << " | ";
+        cout << student.marks[0] << ";" << student.marks[1] << ";" << student.marks[2] << ";" << student.marks[3] << ";" << student.marks[4] << " | " << endl;
+    }
+    cout << "Нажмите кнопку, чтобы продолжить." << endl;
+    cin.get();
 }
 // Функции прочие
 void getIdStudentForChange()
@@ -1054,5 +1128,20 @@ void studentsWithBadMarksChek()
     }
     printStudentsWithBadMarks(idStudentsWithBadMarks);
 }
-
-
+string toLower(string& str) {
+    string result = str;
+    transform(result.begin(), result.end(), result.begin(),
+                   [](char c) { return tolower(c); });
+    return result;
+}
+int getAverage(int* marksPoint)
+{
+    int average{};
+    int sumMarks{};
+    for (int i = 0;i < 5;i++)
+    {
+        sumMarks += marksPoint[i];
+    }
+    average = sumMarks / 5.000;
+    return average;
+}
