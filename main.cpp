@@ -65,6 +65,9 @@ void delStudentFromBase();
 void changeStudentData(vector<string>,int);
 void preSortDataFromBase();
 void sortStudent(int,int,vector<Student>);
+void preExportTxtFromList(vector<Student>);
+void preExportTxtFromMenu();
+void exportTxt(string,vector<Student>);
 // Конец область функций
 
 int main()
@@ -95,6 +98,7 @@ int main()
                     studentsWithBadMarksChek();
                     break;
                 case 5:
+                    preExportTxtFromMenu();
                     break;
                 case 6:
                     break;
@@ -134,6 +138,7 @@ int main()
                     studentsWithBadMarksChek();
                     break;
                 case 6:
+                    preExportTxtFromMenu();
                     break;
                 case 7:
                     break;
@@ -803,9 +808,11 @@ void printAllDataFromBase()
     cout << string(104, '=') << endl;
 
     // Данные студентов
+    vector<Student> dataForExport;
     for (Student student: Students)
     {
         if (student.id == 0) continue;
+        dataForExport.push_back(student);
         cout << string(104, '-') << endl;
         cout << setw(3) << " | ";
         cout << setw(4) << student.id << " | ";
@@ -819,6 +826,7 @@ void printAllDataFromBase()
     }
     cout << "Нажмите кнопку, чтобы продолжить." << endl;
     cin.get();
+    preExportTxtFromList(dataForExport);
 }
 void printStudentsWithBadMarks(vector<int> idStudentsWithBadMarks)
 {
@@ -841,8 +849,10 @@ void printStudentsWithBadMarks(vector<int> idStudentsWithBadMarks)
     cout << string(104, '=') << endl;
 
     // Данные студентов
+    vector<Student> dataForExport;
     for (Student student : Students){
         if (count(idStudentsWithBadMarks.begin(),idStudentsWithBadMarks.end(),student.id) == 0) continue;
+        dataForExport.push_back(student);
         cout << string(104, '-') << endl;
         cout << setw(3) << " | ";
         cout << setw(4) << student.id << " | ";
@@ -856,6 +866,7 @@ void printStudentsWithBadMarks(vector<int> idStudentsWithBadMarks)
     }
     cout << "Нажмите кнопку, чтобы продолжить." << endl;
     cin.get();
+    preExportTxtFromList(dataForExport);
 }
 void printStudentsFromVector(vector<Student> studentsSortList)
 {
@@ -884,9 +895,11 @@ void printStudentsFromVector(vector<Student> studentsSortList)
     cout << string(104, '=') << endl;
 
     // Данные студентов
+    vector<Student> dataForExport;
     for (Student student: studentsSortList)
     {
         if (student.id == 0) continue;
+        dataForExport.push_back(student);
         cout << string(104, '-') << endl;
         cout << setw(3) << " | ";
         cout << setw(4) << student.id << " | ";
@@ -900,6 +913,7 @@ void printStudentsFromVector(vector<Student> studentsSortList)
     }
     cout << "Нажмите кнопку, чтобы продолжить." << endl;
     cin.get();
+    preExportTxtFromList(dataForExport);
 }
 // Функции прочие
 void getIdStudentForChange()
@@ -1144,4 +1158,58 @@ int getAverage(int* marksPoint)
     }
     average = sumMarks / 5.000;
     return average;
+}
+void preExportTxtFromList(vector<Student> studentsForExportToTxt)
+{
+    char exportAccept{};
+    cout << "Вы хотите сохранить эти данные в файл? (y/n)" << endl;
+    exportAccept = getCorrectChar();
+    if (exportAccept == 'y' or exportAccept == 'Y')
+    {
+        cout << "Введите имя файла в который вы хотите сохранить данные (без формата)" << endl;
+        string txtFileName{};
+        cin >> txtFileName;
+        fixStreamState();
+        exportTxt(txtFileName,studentsForExportToTxt);
+    }else
+    {
+        return;
+    }
+}
+void preExportTxtFromMenu()
+{
+    printAllDataFromBase();
+}
+void exportTxt(string txtFileName, vector<Student> studentsToExportTxt)
+{
+    if (studentsToExportTxt.empty())
+    {
+        cout << "Нет студентов для экспорта" << endl;
+        return;
+    }
+    ofstream txtFile (txtFileName + ".txt");
+    if (!txtFile.is_open())
+    {
+        cout << "Ошибка открытия (создания) файла" << endl;
+        return;
+    }
+    txtFile << "ID;Фамилия;Имя;Отчество;Курс;Группа;Год_поступления;"
+        << "Оценка1;Оценка2;Оценка3;Оценка4;Оценка5" << endl;
+    for (Student student : studentsToExportTxt)
+    {
+        txtFile << student.id << ";"
+        << student.lastname << ";"
+        << student.name << ";"
+        << student.fathername << ";"
+        << student.level << ";"
+        << student.group << ";"
+        << student.firstYear << ";"
+        << student.marks[0] << ";"
+        << student.marks[1] << ";"
+        << student.marks[2] << ";"
+        << student.marks[3] << ";"
+        << student.marks[4] << endl;
+    }
+    txtFile.close();
+    cout << "Данные успешно экспортированы в файл " << txtFileName + ".txt" << endl;
 }
