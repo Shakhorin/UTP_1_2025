@@ -950,7 +950,7 @@ void parsingText(vector<string> txtLines)
                 dataOneStudent.push_back(word);
             }
         }
-        if (size(dataOneStudent) != 11)
+        if (dataOneStudent.size() != 11)
         {
             cout << "Неверно отформатирована строка:" << indexString - 1 << endl;
             cout << txtString << endl;
@@ -1106,7 +1106,10 @@ string getCorrectGroup()
         isNotOk = false;
         cin >> n;
         regex pattern("[^(A-Z0-9-)]");
-        if (n.length() < 2 or regex_search(n, pattern)) {
+        regex letter("[A-Z]");
+        regex number("[0-9]");
+        regex dash("[-]");
+        if (n.length() < 2 or regex_search(n, pattern) or !regex_search(n, dash) or !regex_search(n, letter) or !regex_search(n, number)) {
             fixStreamState();
             cout << "Неверное значение!" << endl;
             cout << "Повторите попытку: " << endl;
