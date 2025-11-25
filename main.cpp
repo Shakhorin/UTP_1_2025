@@ -30,7 +30,6 @@ struct Student
 Student Students[10]{};
 vector<int> FreeId{ 1,2,3,4,5,6,7,8,9,10 };
 int UserType{};
-
 // Конец области переменных
 
 // Область объявления функций
