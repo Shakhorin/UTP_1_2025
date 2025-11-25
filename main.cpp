@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -385,7 +385,6 @@ void loadFromKeyboard()
         return;
     }
     vector<string> dataOneStudent{};
-    cout << "ВНИМАНИЕ! ДЛЯ ВВОДА ДАННЫХ ИСПОЛЬЗУЙТЕ ЛАТИНСКИЙ АЛФАВИТ" << endl;
     cout << "Введите фамилию(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
     string lastname{};
     lastname = getCorrectFIO();
