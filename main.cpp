@@ -4,13 +4,11 @@
 #include <string>
 #include <limits>
 #include <algorithm>
-#include <functional>
 #include <iomanip>
 #include <memory>
 #include <sstream>
 #include <regex>
 #include <numeric>
-#include <cstring>
 #define NOMINMAX
 #include <windows.h>
 
@@ -414,6 +412,7 @@ void loadFromKeyboard()
     firstYear = to_string(firstYear_i);
     dataOneStudent.push_back(firstYear);
     cout << "Введите 5 оценок(Если будет введена строка с пробелом, то будут использованы первые пять оценок)" << endl;
+    cout << "Вводите оценки в порядке: Матан, ВП, Рус.яз, Англ.яз, Химия" << endl;
     int marks[5]{};
     for (int i = 0; i < 5; i++)
     {
@@ -472,6 +471,7 @@ void loadChangeDataFromKeyboard(int idStudentForChange)
     firstYear = to_string(firstYear_i);
     dataOneStudent.push_back(firstYear);
     cout << "Введите 5 оценок(Если будет введена строка с пробелом, то будут использованы первые пять оценок)" << endl;
+    cout << "Вводите оценки в порядке: Матан, ВП, Рус.яз, Англ.яз, Химия" << endl;
     cout << "Старое значение: ";
     for (int mark : studentForChange.marks)
     {
@@ -810,18 +810,22 @@ void printAllDataFromBase()
     cout << endl;
 
     // Заголовок таблицы
-    cout << " | ";
+    cout << "|";
     cout << setw(4) << "ID" << " | ";
     cout << setw(12) << "     Фамилия" << " | ";
     cout << setw(12) << "         Имя" << " | ";
     cout << setw(12) << "    Отчество" << " | ";
     cout << setw(4) << "Курс" << " | ";
     cout << setw(10) << "    Группа" << " | ";
-    cout << setw(15) << "Год поступления" << " | ";
-    cout << setw(10) << "   Оценки" << " | " << endl;
+    cout << setw(5) << "  Год" << " | ";
+    cout << setw(5) << "  Мат" << " | " ;
+    cout << setw(5) << "   ВП" << " | " ;
+    cout << setw(5) << "  Рус" << " | " ;
+    cout << setw(5) << " Англ" << " | " ;
+    cout << setw(5) << "Химия" << " | \n" ;
 
     // Разделитель
-    cout << string(104, '=') << endl;
+    cout << string(119, '=') << "\n";
 
     // Данные студентов
     vector<Student> dataForExport;
@@ -829,16 +833,20 @@ void printAllDataFromBase()
     {
         if (student.id == 0) continue;
         dataForExport.push_back(student);
-        cout << string(104, '-') << endl;
-        cout << setw(3) << " | ";
+        cout << string(119, '-') << "\n";
+        cout << setw(1) << "|";
         cout << setw(4) << student.id << " | ";
         cout << setw(12) << student.lastname << " | ";
         cout << setw(12) << student.name << " | ";
         cout << setw(12) << student.fathername << " | ";
         cout << setw(4) << student.level << " | ";
         cout << setw(10) << student.group << " | ";
-        cout << setw(15) << student.firstYear << " | ";
-        cout << student.marks[0] << ";" << student.marks[1] << ";" << student.marks[2] << ";" << student.marks[3] << ";" << student.marks[4] << " | " << endl;
+        cout << setw(5) << student.firstYear << " | ";
+        cout << setw(5) << student.marks[0] << " | ";
+        cout << setw(5) << student.marks[1] << " | ";
+        cout << setw(5) << student.marks[2] << " | ";
+        cout << setw(5) << student.marks[3] << " | ";
+        cout << setw(5) << student.marks[4] << " | \n";
     }
     cout << "Нажмите кнопку, чтобы продолжить." << endl;
     cin.get();
@@ -850,34 +858,42 @@ void printStudentsWithBadMarks(vector<int> idStudentsWithBadMarks)
     cout << endl;
 
     // Заголовок таблицы
-    cout << " | ";
+    cout << "|";
     cout << setw(4) << "ID" << " | ";
     cout << setw(12) << "     Фамилия" << " | ";
     cout << setw(12) << "         Имя" << " | ";
     cout << setw(12) << "    Отчество" << " | ";
     cout << setw(4) << "Курс" << " | ";
     cout << setw(10) << "    Группа" << " | ";
-    cout << setw(15) << "Год поступления" << " | ";
-    cout << setw(10) << "   Оценки" << " | " << endl;
+    cout << setw(5) << "  Год" << " | ";
+    cout << setw(5) << "  Мат" << " | " ;
+    cout << setw(5) << "   ВП" << " | " ;
+    cout << setw(5) << "  Рус" << " | " ;
+    cout << setw(5) << " Англ" << " | " ;
+    cout << setw(5) << "Химия" << " | \n" ;
 
     // Разделитель
-    cout << string(104, '=') << endl;
+    cout << string(119, '=') << "\n";
 
     // Данные студентов
     vector<Student> dataForExport;
     for (Student student : Students) {
         if (count(idStudentsWithBadMarks.begin(), idStudentsWithBadMarks.end(), student.id) == 0) continue;
         dataForExport.push_back(student);
-        cout << string(104, '-') << endl;
-        cout << setw(3) << " | ";
+        cout << string(119, '-') << "\n";
+        cout << setw(1) << "|";
         cout << setw(4) << student.id << " | ";
         cout << setw(12) << student.lastname << " | ";
         cout << setw(12) << student.name << " | ";
         cout << setw(12) << student.fathername << " | ";
         cout << setw(4) << student.level << " | ";
         cout << setw(10) << student.group << " | ";
-        cout << setw(15) << student.firstYear << " | ";
-        cout << student.marks[0] << ";" << student.marks[1] << ";" << student.marks[2] << ";" << student.marks[3] << ";" << student.marks[4] << " | " << endl;
+        cout << setw(5) << student.firstYear << " | ";
+        cout << setw(5) << student.marks[0] << " | ";
+        cout << setw(5) << student.marks[1] << " | ";
+        cout << setw(5) << student.marks[2] << " | ";
+        cout << setw(5) << student.marks[3] << " | ";
+        cout << setw(5) << student.marks[4] << " | \n";
     }
     cout << "Нажмите кнопку, чтобы продолжить." << endl;
     cin.get();
@@ -896,18 +912,22 @@ void printStudentsFromVector(vector<Student> studentsSortList)
     cout << endl;
 
     // Заголовок таблицы
-    cout << " | ";
+    cout << "|";
     cout << setw(4) << "ID" << " | ";
     cout << setw(12) << "     Фамилия" << " | ";
     cout << setw(12) << "         Имя" << " | ";
     cout << setw(12) << "    Отчество" << " | ";
     cout << setw(4) << "Курс" << " | ";
     cout << setw(10) << "    Группа" << " | ";
-    cout << setw(15) << "Год поступления" << " | ";
-    cout << setw(10) << "   Оценки" << " | " << endl;
+    cout << setw(5) << "  Год" << " | ";
+    cout << setw(5) << "  Мат" << " | " ;
+    cout << setw(5) << "   ВП" << " | " ;
+    cout << setw(5) << "  Рус" << " | " ;
+    cout << setw(5) << " Англ" << " | " ;
+    cout << setw(5) << "Химия" << " | \n" ;
 
     // Разделитель
-    cout << string(104, '=') << endl;
+    cout << string(119, '=') << "\n";
 
     // Данные студентов
     vector<Student> dataForExport;
@@ -915,16 +935,20 @@ void printStudentsFromVector(vector<Student> studentsSortList)
     {
         if (student.id == 0) continue;
         dataForExport.push_back(student);
-        cout << string(104, '-') << endl;
-        cout << setw(3) << " | ";
+        cout << string(119, '-') << "\n";
+        cout << setw(1) << "|";
         cout << setw(4) << student.id << " | ";
         cout << setw(12) << student.lastname << " | ";
         cout << setw(12) << student.name << " | ";
         cout << setw(12) << student.fathername << " | ";
         cout << setw(4) << student.level << " | ";
         cout << setw(10) << student.group << " | ";
-        cout << setw(15) << student.firstYear << " | ";
-        cout << student.marks[0] << ";" << student.marks[1] << ";" << student.marks[2] << ";" << student.marks[3] << ";" << student.marks[4] << " | " << endl;
+        cout << setw(5) << student.firstYear << " | ";
+        cout << setw(5) << student.marks[0] << " | ";
+        cout << setw(5) << student.marks[1] << " | ";
+        cout << setw(5) << student.marks[2] << " | ";
+        cout << setw(5) << student.marks[3] << " | ";
+        cout << setw(5) << student.marks[4] << " | \n";
     }
     cout << "Нажмите кнопку, чтобы продолжить." << endl;
     cin.get();
@@ -1200,7 +1224,12 @@ void preExportTxtFromList(vector<Student> studentsForExportToTxt)
 }
 void preExportTxtFromMenu()
 {
-    printAllDataFromBase();
+    vector<Student> studentsToExport{};
+    for (Student student : Students)
+    {
+        studentsToExport.push_back(student);
+    }
+    printStudentsFromVector(studentsToExport);
 }
 void exportTxt(string txtFileName, vector<Student> studentsToExportTxt)
 {
