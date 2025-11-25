@@ -11,6 +11,8 @@
 #include <regex>
 #include <numeric>
 #include <cstring>
+#define NOMINMAX
+#include <windows.h>
 
 using namespace std;
 
@@ -28,14 +30,14 @@ struct Student
 
 // Область объявления переменных
 Student Students[10]{};
-vector<int> FreeId{1,2,3,4,5,6,7,8,9,10};
+vector<int> FreeId{ 1,2,3,4,5,6,7,8,9,10 };
 int UserType{};
 
 // Конец области переменных
 
 // Область объявления функций
 int getLoginPass();
-int loadChekUserData(string login,string password);
+int loadChekUserData(string login, string password);
 void userMenu();
 void adminMenu();
 void loadFromTextFile();
@@ -55,110 +57,112 @@ void studentsWithBadMarksChek();
 void getIdStudentForChange();
 void loadChangeDataFromKeyboard(int);
 string toLower(string&);
-int getAverage(int []);
+int getAverage(int[]);
 // Функции взаимодействия с базой
 void addNewStudent(vector<string>);
 void printAllDataFromBase();
 void printStudentsFromVector(vector<Student>);
 void printStudentsFromVector(vector<int>);
 void delStudentFromBase();
-void changeStudentData(vector<string>,int);
+void changeStudentData(vector<string>, int);
 void preSortDataFromBase();
-void sortStudent(int,int,vector<Student>);
+void sortStudent(int, int, vector<Student>);
 void preExportTxtFromList(vector<Student>);
 void preExportTxtFromMenu();
-void exportTxt(string,vector<Student>);
+void exportTxt(string, vector<Student>);
 // Конец область функций
 
 int main()
 {
-    system("chcp 65001");
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
     getLoginPass();
     switch (UserType)
     {
     case 1:
+    {
+
+        // Пользователь
+        int userChoice{};
+        do
         {
-            // Пользователь
-            int userChoice{};
-            do
+            userMenu();
+            userChoice = getCorrectValue();
+            switch (userChoice)
             {
-                userMenu();
-                userChoice = getCorrectValue();
-                switch (userChoice)
-                {
-                case 1:
-                    loadFromTextFile();
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    printAllDataFromBase();
-                    break;
-                case 4:
-                    studentsWithBadMarksChek();
-                    break;
-                case 5:
-                    preExportTxtFromMenu();
-                    break;
-                case 6:
-                    break;
-                case 7:
-                    preSortDataFromBase();
-                    break;
-                case 8:
-                    break;
-                default:
-                    cout << "Введен неверный номер" << endl;
-                }
-            }while(userChoice != 8);
-            break;
-        }
+            case 1:
+                loadFromTextFile();
+                break;
+            case 2:
+                break;
+            case 3:
+                printAllDataFromBase();
+                break;
+            case 4:
+                studentsWithBadMarksChek();
+                break;
+            case 5:
+                preExportTxtFromMenu();
+                break;
+            case 6:
+                break;
+            case 7:
+                preSortDataFromBase();
+                break;
+            case 8:
+                break;
+            default:
+                cout << "Введен неверный номер" << endl;
+            }
+        } while (userChoice != 8);
+        break;
+    }
     case 2:
+    {
+        // Администратор
+        int adminChoice{};
+        do
         {
-            // Администратор
-            int adminChoice{};
-            do
+            adminMenu();
+            adminChoice = getCorrectValue();
+            switch (adminChoice)
             {
-                adminMenu();
-                adminChoice = getCorrectValue();
-                switch (adminChoice)
-                {
-                case 1:
-                    loadFromKeyboard();
-                    break;
-                case 2:
-                    loadFromTextFile();
-                    break;
-                case 3:
-                    break;
-                case 4:
-                    printAllDataFromBase();
-                    break;
-                case 5:
-                    studentsWithBadMarksChek();
-                    break;
-                case 6:
-                    preExportTxtFromMenu();
-                    break;
-                case 7:
-                    break;
-                case 8:
-                    getIdStudentForChange();
-                    break;
-                case 9:
-                    delStudentFromBase();
-                    break;
-                case 10:
-                    preSortDataFromBase();
-                    break;
-                case 11:
-                    break;
-                default:
-                    cout << "Введен неверный номер" << endl;
-                }
-            }while(adminChoice != 11);
-            break;
-        }
+            case 1:
+                loadFromKeyboard();
+                break;
+            case 2:
+                loadFromTextFile();
+                break;
+            case 3:
+                break;
+            case 4:
+                printAllDataFromBase();
+                break;
+            case 5:
+                studentsWithBadMarksChek();
+                break;
+            case 6:
+                preExportTxtFromMenu();
+                break;
+            case 7:
+                break;
+            case 8:
+                getIdStudentForChange();
+                break;
+            case 9:
+                delStudentFromBase();
+                break;
+            case 10:
+                preSortDataFromBase();
+                break;
+            case 11:
+                break;
+            default:
+                cout << "Введен неверный номер" << endl;
+            }
+        } while (adminChoice != 11);
+        break;
+    }
     default:
         cout << "Ошибка авторизации" << endl;
     }
@@ -171,29 +175,29 @@ int main()
 // Функции авторизации
 int getLoginPass()
 {
-    string login{},password{};
+    string login{}, password{};
     do
     {
-        cout<<"Введите логин:" << endl;
+        cout << "Введите логин:" << endl;
         cin >> login;
         cin.ignore();
-    }while (login.empty());
+    } while (login.empty());
     do
     {
         cout << "Введите пароль" << endl;
         cin >> password;
         cin.ignore();
-    }while (password.empty());
+    } while (password.empty());
 
-    return  loadChekUserData(login,password);
+    return  loadChekUserData(login, password);
 }
 int loadChekUserData(string login, string password)
 {
     // Загрузка данных
-    vector<string> loginsAdmin{},passwordsAdmin{};
-    vector<string> loginsUsers{},passwordsUsers{};
+    vector<string> loginsAdmin{}, passwordsAdmin{};
+    vector<string> loginsUsers{}, passwordsUsers{};
 
-    ifstream userPassFile ("Login_pass_user.txt");
+    ifstream userPassFile("Login_pass_user.txt");
     if (userPassFile.is_open())
     {
         string line{};
@@ -206,18 +210,20 @@ int loadChekUserData(string login, string password)
                 if (rotation % 2 == 0)
                 {
                     passwordsUsers.push_back(line);
-                }else
+                }
+                else
                 {
                     loginsUsers.push_back(line);
                 }
             }
         }
         userPassFile.close();
-    }else
+    }
+    else
     {
         cout << "Ошибка. Файл с данными пользователей не открылся" << endl;
     }
-    ifstream adminPassFile ("Login_pass_admin.txt");
+    ifstream adminPassFile("Login_pass_admin.txt");
     if (adminPassFile.is_open())
     {
         string line{};
@@ -230,43 +236,49 @@ int loadChekUserData(string login, string password)
                 if (rotation % 2 == 0)
                 {
                     passwordsAdmin.push_back(line);
-                }else
+                }
+                else
                 {
                     loginsAdmin.push_back(line);
                 }
             }
         }
         adminPassFile.close();
-    }else
+    }
+    else
     {
         cout << "Ошибка. Файл с данными администраторов не открылся" << endl;
     }
 
     // Авторизация
 
-    if (find(loginsUsers.begin(),loginsUsers.end(),login) != loginsUsers.end())
+    if (count(loginsUsers.begin(), loginsUsers.end(), login) != 0)
     {
-        if (passwordsUsers[distance(loginsUsers.begin(),find(loginsUsers.begin(),loginsUsers.end(),login))] == password)
+        if (passwordsUsers[distance(loginsUsers.begin(), find(loginsUsers.begin(), loginsUsers.end(), login))] == password)
         {
             cout << "Вы авторизованы как пользователь" << endl;
             UserType = 1;
-        }else
+        }
+        else
         {
             cout << "Неверный пароль. Повторите попытку" << endl;
             getLoginPass();
         }
-    }else if (find(loginsAdmin.begin(),loginsAdmin.end(),login) != loginsAdmin.end())
+    }
+    else if (count(loginsAdmin.begin(), loginsAdmin.end(), login) != 0)
     {
-        if (passwordsAdmin[distance(loginsAdmin.begin(),find(loginsAdmin.begin(),loginsAdmin.end(),login))] == password)
+        if (passwordsAdmin[distance(loginsAdmin.begin(), find(loginsAdmin.begin(), loginsAdmin.end(), login))] == password)
         {
             cout << "Вы авторизованы как администратор" << endl;
             UserType = 2;
-        }else
+        }
+        else
         {
             cout << "Неверный пароль. Повторите попытку" << endl;
             getLoginPass();
         }
-    }else
+    }
+    else
     {
         cout << "Неверный логин. Повторите попытку" << endl;
         getLoginPass();
@@ -277,21 +289,21 @@ int loadChekUserData(string login, string password)
 // Функции меню
 void adminMenu()
 {
-    cout <<"\n";
+    cout << "\n";
     cout << "========== СИСТЕМА УПРАВЛЕНИЯ СТУДЕНТАМИ ==========\n" << endl;
     cout << "***ФУНКЦИИ ВВОДА***" << endl;
     cout << "1. Ввод информации с клавиатуры" << endl;
     cout << "2. Загрузка из текстового файла" << endl;
     cout << "3. Загрузка из бинарного файла" << endl;
-    cout <<"\n";
+    cout << "\n";
     cout << "***ФУНКЦИИ ВЫВОДА НА ЭКРАН***" << endl;
     cout << "4. Вывод данных в виде таблицы" << endl;
     cout << "5. Выполнение запроса (поиск двоечников)" << endl;
-    cout <<"\n";
+    cout << "\n";
     cout << "***ФУНКЦИИ ЭКСПОРТА***" << endl;
     cout << "6. Экспорт в текстовый файл" << endl;
     cout << "7. Экспорт в бинарный файл" << endl;
-    cout <<"\n";
+    cout << "\n";
     cout << "***ФУНКЦИИ РЕДАКТИРОВАНИЯ ДАННЫХ***" << endl;
     cout << "8. Изменение записи" << endl;
     cout << "9. Удаление записи" << endl;
@@ -302,20 +314,20 @@ void adminMenu()
 }
 void userMenu()
 {
-    cout <<"\n";
+    cout << "\n";
     cout << "========== СИСТЕМА УПРАВЛЕНИЯ СТУДЕНТАМИ ==========\n" << endl;
     cout << "***ФУНКЦИИ ВВОДА***" << endl;
     cout << "1. Загрузка из текстового файла" << endl;
     cout << "2. Загрузка из бинарного файла" << endl;
-    cout <<"\n";
+    cout << "\n";
     cout << "***ФУНКЦИИ ВЫВОДА НА ЭКРАН***" << endl;
     cout << "3. Вывод данных в виде таблицы" << endl;
     cout << "4. Выполнение запроса (поиск двоечников)" << endl;
-    cout <<"\n";
+    cout << "\n";
     cout << "***ФУНКЦИИ ЭКСПОРТА***" << endl;
     cout << "5. Экспорт в текстовый файл" << endl;
     cout << "6. Конвертация в бинарный файл" << endl;
-    cout <<"\n";
+    cout << "\n";
     cout << "***ФУНКЦИИ РЕДАКТИРОВАНИЯ ДАННЫХ***" << endl;
     cout << "7. Сортировка данных" << endl;
     cout << endl;
@@ -331,33 +343,36 @@ void loadFromTextFile()
     cin >> linkFile;
     cin.ignore();
     // Проверка формата
-    reverse(linkFile.begin(),linkFile.end());
+    reverse(linkFile.begin(), linkFile.end());
     int index{};
     try
     {
-        string formatFile = string(1,linkFile.at(index++)) + string(1,linkFile.at(index++)) + string(1,linkFile.at(index++)) + string(1,linkFile.at(index++));
-        reverse(linkFile.begin(),linkFile.end());
+        string formatFile = string(1, linkFile.at(index++)) + string(1, linkFile.at(index++)) + string(1, linkFile.at(index++)) + string(1, linkFile.at(index++));
+        reverse(linkFile.begin(), linkFile.end());
         if (formatFile == ".txt")
         {
-            ifstream txtFile (linkFile);
+            ifstream txtFile(linkFile);
             if (txtFile.is_open())
             {
                 cout << "Файл открыт успешно" << endl;
                 string txtLine{};
-                while (getline(txtFile,txtLine) and !txtLine.empty())
+                while (getline(txtFile, txtLine) and !txtLine.empty())
                 {
                     txtLines.push_back(txtLine);
                 }
                 parsingText(txtLines);
-            }else
+            }
+            else
             {
                 cout << "Ошибка открытия файла! Проверьте наличие файла и правильность пути." << endl;
             }
-        }else
+        }
+        else
         {
             cout << "Неверное расширение файла. Файл должен быть в формате .txt" << endl;
         }
-    }catch (...)
+    }
+    catch (...)
     {
         cout << "Ошибка! Неверный формат." << endl;
     }
@@ -458,7 +473,7 @@ void loadChangeDataFromKeyboard(int idStudentForChange)
     firstYear = to_string(firstYear_i);
     dataOneStudent.push_back(firstYear);
     cout << "Введите 5 оценок(Если будет введена строка с пробелом, то будут использованы первые пять оценок)" << endl;
-    cout << "Старое значение: " ;
+    cout << "Старое значение: ";
     for (int mark : studentForChange.marks)
     {
         cout << mark << " ";
@@ -489,7 +504,7 @@ void addNewStudent(vector<string> dataOneStudent)
         return;
     }
     sort(FreeId.begin(), FreeId.end());
-    int studentId{FreeId[0]};
+    int studentId{ FreeId[0] };
     FreeId.erase(FreeId.begin());
     int indexInVec{};
     try
@@ -507,9 +522,10 @@ void addNewStudent(vector<string> dataOneStudent)
         newStudent.marks[2] = stoi(dataOneStudent[indexInVec++]);
         newStudent.marks[3] = stoi(dataOneStudent[indexInVec++]);
         newStudent.marks[4] = stoi(dataOneStudent[indexInVec++]);
-        Students[studentId-1] = newStudent;
+        Students[studentId - 1] = newStudent;
         cout << "Студент добавлен c ID:" << newStudent.id << endl;
-    }catch (...)
+    }
+    catch (...)
     {
         cout << "Данные в файле в неверном формате" << endl;
     }
@@ -518,8 +534,8 @@ void delStudentFromBase()
 {
     char accept{};
     int idForDel{};
-    bool flagExit{false};
-    do{
+    bool flagExit{ false };
+    do {
         if (flagExit)
         {
             char exitChar{};
@@ -536,7 +552,7 @@ void delStudentFromBase()
         cout << "Вы действительно хотите удалить студента с ID:" << idForDel << "?(y/n)(Если вы введете слово, будет использован первый символ)" << endl;
         accept = getCorrectChar();
         flagExit = true;
-    }while (accept == 'n' or accept == 'N');
+    } while (accept == 'n' or accept == 'N');
     int indexStudentForDel{};
     for (Student student : Students)
     {
@@ -568,14 +584,15 @@ void changeStudentData(vector<string> updataOneStudent, int idStudentForChange)
         newStudent.marks[2] = stoi(updataOneStudent[indexInVec++]);
         newStudent.marks[3] = stoi(updataOneStudent[indexInVec++]);
         newStudent.marks[4] = stoi(updataOneStudent[indexInVec++]);
-        Students[idStudentForChange-1] = newStudent;
+        Students[idStudentForChange - 1] = newStudent;
         cout << "Студент изменен c ID:" << newStudent.id << endl;
-    }catch (...)
+    }
+    catch (...)
     {
         cout << "Данные в файле в неверном формате" << endl;
     }
 }
-void preSortDataFromBase(){
+void preSortDataFromBase() {
     vector <Student> studentsForSort{};
     for (Student students : Students)
     {
@@ -591,193 +608,193 @@ void preSortDataFromBase(){
     cout << "2 - В порядке убывания (Я-А)" << endl;
     cout << "Введите номер:" << endl;
     int choiceDirection{};
-    bool exitControl{true};
+    bool exitControl{ true };
     do
     {
         choiceDirection = getCorrectValue();
         exitControl = false;
         switch (choiceDirection)
         {
-            case 1:
-                {
-                    cout << "Выберите поле для сортировки" << endl;
-                    cout << "1 - ID" << endl;
-                    cout << "2 - Фамилия" << endl;
-                    cout << "3 - Имя" << endl;
-                    cout << "4 - Отчество" << endl;
-                    cout << "5 - Курс" << endl;
-                    cout << "6 - Группа" << endl;
-                    cout << "7 - Год поступления" << endl;
-                    cout << "8 - Оценки" << endl;
-                    cout << "Введите номер:" << endl;
-                    int choiceSortField{};
-                    bool exitControlBy1{false};
-                    do
-                    {
-                        choiceSortField = getCorrectValue();
-                        exitControlBy1 = false;
-                        if (choiceSortField < 1 or choiceSortField > 8) exitControl = true;
-                    }while (exitControlBy1);
-                    sortStudent(choiceDirection,choiceSortField,studentsForSort);
-                    break;
-                }
-            case 2:
-                {
-                    cout << "Выберите поле для сортировки" << endl;
-                    cout << "1 - ID" << endl;
-                    cout << "2 - Фамилия" << endl;
-                    cout << "3 - Имя" << endl;
-                    cout << "4 - Отчество" << endl;
-                    cout << "5 - Курс" << endl;
-                    cout << "6 - Группа" << endl;
-                    cout << "7 - Год поступления" << endl;
-                    cout << "8 - Оценки" << endl;
-                    cout << "Введите номер:" << endl;
-                    int choiceSortField{};
-                    bool exitControlBy2{false};
-                    do
-                    {
-                        choiceSortField = getCorrectValue();
-                        exitControlBy2 = false;
-                        if (choiceSortField < 1 or choiceSortField > 8) exitControl = true;
-                    }while (exitControlBy2);
-                    sortStudent(choiceDirection,choiceSortField,studentsForSort);
-                    break;
-                }
-            default:
-                {
-                    cout << "Введен неверный номер. Повторите попытку." << endl;
-                    exitControl = true;
-                }
+        case 1:
+        {
+            cout << "Выберите поле для сортировки" << endl;
+            cout << "1 - ID" << endl;
+            cout << "2 - Фамилия" << endl;
+            cout << "3 - Имя" << endl;
+            cout << "4 - Отчество" << endl;
+            cout << "5 - Курс" << endl;
+            cout << "6 - Группа" << endl;
+            cout << "7 - Год поступления" << endl;
+            cout << "8 - Оценки" << endl;
+            cout << "Введите номер:" << endl;
+            int choiceSortField{};
+            bool exitControlBy1{ false };
+            do
+            {
+                choiceSortField = getCorrectValue();
+                exitControlBy1 = false;
+                if (choiceSortField < 1 or choiceSortField > 8) exitControl = true;
+            } while (exitControlBy1);
+            sortStudent(choiceDirection, choiceSortField, studentsForSort);
+            break;
         }
-    }while (exitControl);
+        case 2:
+        {
+            cout << "Выберите поле для сортировки" << endl;
+            cout << "1 - ID" << endl;
+            cout << "2 - Фамилия" << endl;
+            cout << "3 - Имя" << endl;
+            cout << "4 - Отчество" << endl;
+            cout << "5 - Курс" << endl;
+            cout << "6 - Группа" << endl;
+            cout << "7 - Год поступления" << endl;
+            cout << "8 - Оценки" << endl;
+            cout << "Введите номер:" << endl;
+            int choiceSortField{};
+            bool exitControlBy2{ false };
+            do
+            {
+                choiceSortField = getCorrectValue();
+                exitControlBy2 = false;
+                if (choiceSortField < 1 or choiceSortField > 8) exitControl = true;
+            } while (exitControlBy2);
+            sortStudent(choiceDirection, choiceSortField, studentsForSort);
+            break;
+        }
+        default:
+        {
+            cout << "Введен неверный номер. Повторите попытку." << endl;
+            exitControl = true;
+        }
+        }
+    } while (exitControl);
 }
 void sortStudent(int sortDirection, int sortField, vector<Student> studentsForSort)
 {
     switch (sortDirection)
     {
+    case 1:
+    {
+        switch (sortField)
+        {
         case 1:
-            {
-                switch (sortField)
-                {
-                    case 1:
-                        {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.id < b.id;});
-                            printStudentsFromVector(studentsForSort);
-                            break;
-                        }
-                    case 2:
-                        {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return toLower(a.lastname) < toLower(b.lastname);});
-                            printStudentsFromVector(studentsForSort);
-                            break;
-                        }
-                    case 3:
-                        {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return toLower(a.name) < toLower(b.name);});
-                            printStudentsFromVector(studentsForSort);
-                            break;
-                        }
-                    case 4:
-                        {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return toLower(a.fathername) < toLower(b.fathername);});
-                            printStudentsFromVector(studentsForSort);
-                            break;
-                        }
-                    case 5:
-                        {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.level < b.level;});
-                            printStudentsFromVector(studentsForSort);
-                            break;
-                        }
-                    case 6:
-                        {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.group < b.group;});
-                            printStudentsFromVector(studentsForSort);
-                            break;
-                        }
-                    case 7:
-                        {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.firstYear < b.firstYear;});
-                            printStudentsFromVector(studentsForSort);
-                            break;
-                        }
-                    case 8:
-                        {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return getAverage(a.marks) < getAverage(b.marks);});
-                            printStudentsFromVector(studentsForSort);
-                            break;
-                        }
-                    default:
-                        {
-                            return;
-                        }
-                }
-                break;
-            }
+        {
+            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.id < b.id;});
+            printStudentsFromVector(studentsForSort);
+            break;
+        }
         case 2:
-            {
-                switch (sortField)
-                {
-                    case 1:
-                        {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.id > b.id;});
-                            printStudentsFromVector(studentsForSort);
-                            break;
-                        }
-                    case 2:
-                        {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return toLower(a.lastname) > toLower(b.lastname);});
-                            printStudentsFromVector(studentsForSort);
-                            break;
-                        }
-                    case 3:
-                        {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return toLower(a.name) > toLower(b.name);});
-                            printStudentsFromVector(studentsForSort);
-                            break;
-                        }
-                    case 4:
-                        {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return toLower(a.fathername) >toLower( b.fathername);});
-                            printStudentsFromVector(studentsForSort);
-                            break;
-                        }
-                    case 5:
-                        {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.level > b.level;});
-                            printStudentsFromVector(studentsForSort);
-                            break;
-                        }
-                    case 6:
-                        {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.group > b.group;});
-                            printStudentsFromVector(studentsForSort);
-                            break;
-                        }
-                    case 7:
-                        {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return a.firstYear > b.firstYear;});
-                            printStudentsFromVector(studentsForSort);
-                            break;
-                        }
-                    case 8:
-                        {
-                            sort(begin(studentsForSort), end(studentsForSort),[](Student a,Student b){return getAverage(a.marks) > getAverage(b.marks);});
-                            printStudentsFromVector(studentsForSort);
-                            break;
-                        }
-                    default:
-                        {
-                            return;
-                        }
-                }
-                break;
-            }
+        {
+            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.lastname) < toLower(b.lastname);});
+            printStudentsFromVector(studentsForSort);
+            break;
+        }
+        case 3:
+        {
+            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.name) < toLower(b.name);});
+            printStudentsFromVector(studentsForSort);
+            break;
+        }
+        case 4:
+        {
+            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.fathername) < toLower(b.fathername);});
+            printStudentsFromVector(studentsForSort);
+            break;
+        }
+        case 5:
+        {
+            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.level < b.level;});
+            printStudentsFromVector(studentsForSort);
+            break;
+        }
+        case 6:
+        {
+            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.group < b.group;});
+            printStudentsFromVector(studentsForSort);
+            break;
+        }
+        case 7:
+        {
+            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.firstYear < b.firstYear;});
+            printStudentsFromVector(studentsForSort);
+            break;
+        }
+        case 8:
+        {
+            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return getAverage(a.marks) < getAverage(b.marks);});
+            printStudentsFromVector(studentsForSort);
+            break;
+        }
         default:
-            {
-                return;
-            }
+        {
+            return;
+        }
+        }
+        break;
+    }
+    case 2:
+    {
+        switch (sortField)
+        {
+        case 1:
+        {
+            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.id > b.id;});
+            printStudentsFromVector(studentsForSort);
+            break;
+        }
+        case 2:
+        {
+            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.lastname) > toLower(b.lastname);});
+            printStudentsFromVector(studentsForSort);
+            break;
+        }
+        case 3:
+        {
+            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.name) > toLower(b.name);});
+            printStudentsFromVector(studentsForSort);
+            break;
+        }
+        case 4:
+        {
+            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.fathername) > toLower(b.fathername);});
+            printStudentsFromVector(studentsForSort);
+            break;
+        }
+        case 5:
+        {
+            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.level > b.level;});
+            printStudentsFromVector(studentsForSort);
+            break;
+        }
+        case 6:
+        {
+            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.group > b.group;});
+            printStudentsFromVector(studentsForSort);
+            break;
+        }
+        case 7:
+        {
+            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.firstYear > b.firstYear;});
+            printStudentsFromVector(studentsForSort);
+            break;
+        }
+        case 8:
+        {
+            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return getAverage(a.marks) > getAverage(b.marks);});
+            printStudentsFromVector(studentsForSort);
+            break;
+        }
+        default:
+        {
+            return;
+        }
+        }
+        break;
+    }
+    default:
+    {
+        return;
+    }
     }
 }
 // Функции вывода
@@ -809,7 +826,7 @@ void printAllDataFromBase()
 
     // Данные студентов
     vector<Student> dataForExport;
-    for (Student student: Students)
+    for (Student student : Students)
     {
         if (student.id == 0) continue;
         dataForExport.push_back(student);
@@ -826,7 +843,6 @@ void printAllDataFromBase()
     }
     cout << "Нажмите кнопку, чтобы продолжить." << endl;
     cin.get();
-    preExportTxtFromList(dataForExport);
 }
 void printStudentsWithBadMarks(vector<int> idStudentsWithBadMarks)
 {
@@ -850,8 +866,8 @@ void printStudentsWithBadMarks(vector<int> idStudentsWithBadMarks)
 
     // Данные студентов
     vector<Student> dataForExport;
-    for (Student student : Students){
-        if (count(idStudentsWithBadMarks.begin(),idStudentsWithBadMarks.end(),student.id) == 0) continue;
+    for (Student student : Students) {
+        if (count(idStudentsWithBadMarks.begin(), idStudentsWithBadMarks.end(), student.id) == 0) continue;
         dataForExport.push_back(student);
         cout << string(104, '-') << endl;
         cout << setw(3) << " | ";
@@ -896,7 +912,7 @@ void printStudentsFromVector(vector<Student> studentsSortList)
 
     // Данные студентов
     vector<Student> dataForExport;
-    for (Student student: studentsSortList)
+    for (Student student : studentsSortList)
     {
         if (student.id == 0) continue;
         dataForExport.push_back(student);
@@ -923,13 +939,14 @@ void getIdStudentForChange()
     cout << "Введите id студента, данные которого вы хотите изменить." << endl;
     int idStudentForChange{};
     idStudentForChange = getCorrectId();
-    cout << "Вы действительно хотите изменить данные студента с id:" << idStudentForChange << "? (y/n)" <<  endl;
+    cout << "Вы действительно хотите изменить данные студента с id:" << idStudentForChange << "? (y/n)" << endl;
     char acceptAdminForChange{};
     acceptAdminForChange = getCorrectChar();
     if (acceptAdminForChange != 'y' and acceptAdminForChange != 'Y')
     {
         return;
-    }else
+    }
+    else
     {
         loadChangeDataFromKeyboard(idStudentForChange);
     }
@@ -938,7 +955,7 @@ void parsingText(vector<string> txtLines)
 {
     vector<string> dataOneStudent{};
     int indexString{};
-    for (string txtString :txtLines)
+    for (string txtString : txtLines)
     {
         vector<string> dataOneStudent{};
         if (indexString++ == 0) continue;
@@ -986,7 +1003,8 @@ bool freeIdCheck()
     if (FreeId.size() > 0)
     {
         return true;
-    }else
+    }
+    else
     {
         return false;
     }
@@ -1046,11 +1064,12 @@ int getCorrectId()
 
     do {
         isNotOk = true;
-        if ((cin >> n).fail() or n < 1 or n > 10 or count(FreeId.begin(), FreeId.end(),n) != 0) {
+        if ((cin >> n).fail() or n < 1 or n > 10 or count(FreeId.begin(), FreeId.end(), n) != 0) {
             fixStreamState();
             cout << "Неверное значение!" << endl;
             cout << "Введите ID: " << endl;
-        }else{
+        }
+        else {
             for (Student student : Students)
             {
                 if (student.id == n)
@@ -1087,7 +1106,7 @@ string getCorrectFIO()
     do {
         isNotOk = false;
         cin >> n;
-        regex pattern("[^A-Za-z]");
+        regex pattern("[^A-ZА-Яa-zа-я]");
         if (n.length() < 2 or regex_search(n, pattern)) {
             fixStreamState();
             cout << "Неверное значение!" << endl;
@@ -1105,8 +1124,8 @@ string getCorrectGroup()
     do {
         isNotOk = false;
         cin >> n;
-        regex pattern("[^(A-Z0-9-)]");
-        regex letter("[A-Z]");
+        regex pattern("[^(A-ZА-Я0-9-)]");
+        regex letter("[A-ZА-Я]");
         regex number("[0-9]");
         regex dash("[-]");
         if (n.length() < 2 or regex_search(n, pattern) or !regex_search(n, dash) or !regex_search(n, letter) or !regex_search(n, number)) {
@@ -1148,7 +1167,7 @@ void studentsWithBadMarksChek()
 string toLower(string& str) {
     string result = str;
     transform(result.begin(), result.end(), result.begin(),
-                   [](char c) { return tolower(c); });
+        [](char c) { return tolower(c); });
     return result;
 }
 int getAverage(int* marksPoint)
@@ -1173,8 +1192,9 @@ void preExportTxtFromList(vector<Student> studentsForExportToTxt)
         string txtFileName{};
         cin >> txtFileName;
         fixStreamState();
-        exportTxt(txtFileName,studentsForExportToTxt);
-    }else
+        exportTxt(txtFileName, studentsForExportToTxt);
+    }
+    else
     {
         return;
     }
@@ -1190,28 +1210,27 @@ void exportTxt(string txtFileName, vector<Student> studentsToExportTxt)
         cout << "Нет студентов для экспорта" << endl;
         return;
     }
-    ofstream txtFile (txtFileName + ".txt");
+    ofstream txtFile(txtFileName + ".txt");
     if (!txtFile.is_open())
     {
         cout << "Ошибка открытия (создания) файла" << endl;
         return;
     }
-    txtFile << "ID;Фамилия;Имя;Отчество;Курс;Группа;Год_поступления;"
+    txtFile << "Фамилия;Имя;Отчество;Курс;Группа;Год_поступления;"
         << "Оценка1;Оценка2;Оценка3;Оценка4;Оценка5" << endl;
     for (Student student : studentsToExportTxt)
     {
-        txtFile << student.id << ";"
-        << student.lastname << ";"
-        << student.name << ";"
-        << student.fathername << ";"
-        << student.level << ";"
-        << student.group << ";"
-        << student.firstYear << ";"
-        << student.marks[0] << ";"
-        << student.marks[1] << ";"
-        << student.marks[2] << ";"
-        << student.marks[3] << ";"
-        << student.marks[4] << endl;
+        txtFile << student.lastname << ";"
+            << student.name << ";"
+            << student.fathername << ";"
+            << student.level << ";"
+            << student.group << ";"
+            << student.firstYear << ";"
+            << student.marks[0] << ";"
+            << student.marks[1] << ";"
+            << student.marks[2] << ";"
+            << student.marks[3] << ";"
+            << student.marks[4] << endl;
     }
     txtFile.close();
     cout << "Данные успешно экспортированы в файл " << txtFileName + ".txt" << endl;
