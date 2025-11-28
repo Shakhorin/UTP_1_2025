@@ -64,6 +64,8 @@ void delStudentFromBase();
 void changeStudentData(vector<string>, int);
 void preSortDataFromBase();
 void sortStudent(int, int, vector<Student>);
+template<typename Iterator, typename Comparator>
+void mySort(Iterator, Iterator, Comparator);
 void preExportTxtFromList(vector<Student>);
 void preExportTxtFromMenu();
 void exportTxt(string, vector<Student>);
@@ -677,49 +679,49 @@ void sortStudent(int sortDirection, int sortField, vector<Student> studentsForSo
         {
         case 1:
         {
-            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.id < b.id;});
+            mySort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.id < b.id;});
             printStudentsFromVector(studentsForSort);
             break;
         }
         case 2:
         {
-            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.lastname) < toLower(b.lastname);});
+            mySort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.lastname) < toLower(b.lastname);});
             printStudentsFromVector(studentsForSort);
             break;
         }
         case 3:
         {
-            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.name) < toLower(b.name);});
+            mySort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.name) < toLower(b.name);});
             printStudentsFromVector(studentsForSort);
             break;
         }
         case 4:
         {
-            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.fathername) < toLower(b.fathername);});
+            mySort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.fathername) < toLower(b.fathername);});
             printStudentsFromVector(studentsForSort);
             break;
         }
         case 5:
         {
-            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.level < b.level;});
+            mySort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.level < b.level;});
             printStudentsFromVector(studentsForSort);
             break;
         }
         case 6:
         {
-            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.group < b.group;});
+            mySort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.group < b.group;});
             printStudentsFromVector(studentsForSort);
             break;
         }
         case 7:
         {
-            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.firstYear < b.firstYear;});
+            mySort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.firstYear < b.firstYear;});
             printStudentsFromVector(studentsForSort);
             break;
         }
         case 8:
         {
-            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return getAverage(a.marks) < getAverage(b.marks);});
+            mySort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return getAverage(a.marks) < getAverage(b.marks);});
             printStudentsFromVector(studentsForSort);
             break;
         }
@@ -736,49 +738,49 @@ void sortStudent(int sortDirection, int sortField, vector<Student> studentsForSo
         {
         case 1:
         {
-            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.id > b.id;});
+            mySort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.id > b.id;});
             printStudentsFromVector(studentsForSort);
             break;
         }
         case 2:
         {
-            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.lastname) > toLower(b.lastname);});
+            mySort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.lastname) > toLower(b.lastname);});
             printStudentsFromVector(studentsForSort);
             break;
         }
         case 3:
         {
-            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.name) > toLower(b.name);});
+            mySort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.name) > toLower(b.name);});
             printStudentsFromVector(studentsForSort);
             break;
         }
         case 4:
         {
-            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.fathername) > toLower(b.fathername);});
+            mySort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return toLower(a.fathername) > toLower(b.fathername);});
             printStudentsFromVector(studentsForSort);
             break;
         }
         case 5:
         {
-            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.level > b.level;});
+            mySort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.level > b.level;});
             printStudentsFromVector(studentsForSort);
             break;
         }
         case 6:
         {
-            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.group > b.group;});
+            mySort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.group > b.group;});
             printStudentsFromVector(studentsForSort);
             break;
         }
         case 7:
         {
-            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.firstYear > b.firstYear;});
+            mySort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return a.firstYear > b.firstYear;});
             printStudentsFromVector(studentsForSort);
             break;
         }
         case 8:
         {
-            sort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return getAverage(a.marks) > getAverage(b.marks);});
+            mySort(begin(studentsForSort), end(studentsForSort), [](Student a, Student b) {return getAverage(a.marks) > getAverage(b.marks);});
             printStudentsFromVector(studentsForSort);
             break;
         }
@@ -793,6 +795,18 @@ void sortStudent(int sortDirection, int sortField, vector<Student> studentsForSo
     {
         return;
     }
+    }
+}
+template<typename Iterator, typename Comparator>
+void mySort(Iterator first, Iterator last, Comparator comp) {
+    if (first == last) return;
+
+    for (Iterator i = first; i != last; ++i) {
+        for (Iterator j = first; j != i; ++j) {
+            if (comp(*i, *j)) {
+                iter_swap(i, j);
+            }
+        }
     }
 }
 // Функции вывода
