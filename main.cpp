@@ -33,35 +33,35 @@ int UserType{};
 // Конец области переменных
 
 // Область объявления функций
-int getLoginPass();
-int loadChekUserData(string login, string password);
-void userMenu();
-void adminMenu();
-void loadFromTextFile();
-void loadFromKeyboard();
-void parsingText(vector<string>);
-void fixStreamState();
-int getCorrectValue();
-bool freeIdCheck();
-int getCorrectMark();
-int getCorrectLevel();
-int getCorrectFirstYear();
-int getCorrectId();
-char getCorrectChar();
-string getCorrectFIO();
-string getCorrectGroup();
-void studentsWithBadMarksChek();
-void getIdStudentForChange();
-void loadChangeDataFromKeyboard(int);
-string toLower(string&);
-int getAverage(int[]);
+int getLoginPass();//-
+int loadChekUserData(string login, string password);//-
+void userMenu();//+
+void adminMenu();//+
+void loadFromTextFile();//-
+void loadFromKeyboard();//+
+void parsingText(vector<string>);//+
+void fixStreamState();//-
+int getCorrectValue();//+
+bool freeIdCheck();//+
+int getCorrectMark();//+
+int getCorrectLevel();//+
+int getCorrectFirstYear();//+
+int getCorrectId();//+
+char getCorrectChar();//+
+string getCorrectFIO();//+
+string getCorrectGroup();//+
+void studentsWithBadMarksChek();//+
+void getIdStudentForChange();//+
+void loadChangeDataFromKeyboard(int);//+
+string toLower(string&);//+
+int getAverage(int[]);//+
 // Функции взаимодействия с базой
-void addNewStudent(vector<string>);
-void printAllDataFromBase();
-void printStudentsFromVector(vector<Student>);
-void printStudentsFromVector(vector<int>);
-void delStudentFromBase();
-void changeStudentData(vector<string>, int);
+void addNewStudent(vector<string>);//+
+void printAllDataFromBase();//+
+void printStudentsFromVector(vector<Student>);//+
+void printStudentsFromVector(vector<int>);//-
+void delStudentFromBase();//+
+void changeStudentData(vector<string>, int);//+
 void preSortDataFromBase();
 void sortStudent(int, int, vector<Student>);
 template<typename Iterator, typename Comparator>
@@ -800,7 +800,6 @@ void sortStudent(int sortDirection, int sortField, vector<Student> studentsForSo
 template<typename Iterator, typename Comparator>
 void mySort(Iterator first, Iterator last, Comparator comp) {
     if (first == last) return;
-
     for (Iterator i = first; i != last; ++i) {
         for (Iterator j = first; j != i; ++j) {
             if (comp(*i, *j)) {
