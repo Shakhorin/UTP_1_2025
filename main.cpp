@@ -38,6 +38,7 @@ int loadChekUserData(string login, string password);//-
 void userMenu();//+
 void adminMenu();//+
 void loadFromTextFile();//-
+void loadFronBinFile();
 void loadFromKeyboard();//+
 void parsingText(vector<string>);//+
 void fixStreamState();//-
@@ -364,6 +365,48 @@ void loadFromTextFile()
         else
         {
             cout << "Неверное расширение файла. Файл должен быть в формате .txt" << endl;
+        }
+    }
+    catch (...)
+    {
+        cout << "Ошибка! Неверный формат." << endl;
+    }
+}
+void loadFromBinFile()
+{
+    vector<Student> studentsFromFile{};
+    cout << "Введите полный адрес файла (c/user/documents/doc.dat)" << endl;
+    string linkFile{};
+    cin >> linkFile;
+    cin.ignore();
+    // Проверка формата
+    reverse(linkFile.begin(), linkFile.end());
+    int index{};
+    try
+    {
+        string formatFile = string(1, linkFile.at(index++)) + string(1, linkFile.at(index++)) + string(1, linkFile.at(index++)) + string(1, linkFile.at(index++));
+        reverse(linkFile.begin(), linkFile.end());
+        if (formatFile == ".dat" or formatFile == ".bin")
+        {
+            ifstream binFile(linkFile, ios::binary);
+            if (binFile.is_open())
+            {
+                cout << "Файл открыт успешно" << endl;
+                Student student{};
+                while (binFile.read(reinterpret_cast<char*>(&student), sizeof(student)))
+                {
+                    studentsFromFile.push_back(student);
+                }
+                // parsingText(studentsFromFile);
+            }
+            else
+            {
+                cout << "Ошибка открытия файла! Проверьте наличие файла и правильность пути." << endl;
+            }
+        }
+        else
+        {
+            cout << "Неверное расширение файла. Файл должен быть в формате .dat или .bin" << endl;
         }
     }
     catch (...)
