@@ -47,6 +47,7 @@ int getCorrectMark();//+
 int getCorrectLevel();//+
 int getCorrectFirstYear();//+
 int getCorrectId();//+
+int getCorrectFormat();//+
 char getCorrectChar();//+
 string getCorrectFIO();//+
 string getCorrectGroup();//+
@@ -59,16 +60,16 @@ int getAverage(int[]);//+
 void addNewStudent(vector<string>);//+
 void printAllDataFromBase();//+
 void printStudentsFromVector(vector<Student>);//+
-void printStudentsFromVector(vector<int>);//-
 void delStudentFromBase();//+
 void changeStudentData(vector<string>, int);//+
 void preSortDataFromBase();
 void sortStudent(int, int, vector<Student>);
 template<typename Iterator, typename Comparator>
 void mySort(Iterator, Iterator, Comparator);
-void preExportTxtFromList(vector<Student>);
-void preExportTxtFromMenu();
+void preExportFromList(vector<Student>);
+void preExportFromMenu();
 void exportTxt(string, vector<Student>);
+void exportBin(string, vector<Student>);
 // Конец область функций
 
 int main()
@@ -101,19 +102,17 @@ int main()
                 studentsWithBadMarksChek();
                 break;
             case 5:
-                preExportTxtFromMenu();
+                preExportFromMenu();
                 break;
             case 6:
-                break;
-            case 7:
                 preSortDataFromBase();
                 break;
-            case 8:
+            case 7:
                 break;
             default:
                 cout << "Введен неверный номер" << endl;
             }
-        } while (userChoice != 8);
+        } while (userChoice != 7);
         break;
     }
     case 2:
@@ -141,25 +140,23 @@ int main()
                 studentsWithBadMarksChek();
                 break;
             case 6:
-                preExportTxtFromMenu();
+                preExportFromMenu();
                 break;
             case 7:
-                break;
-            case 8:
                 getIdStudentForChange();
                 break;
-            case 9:
+            case 8:
                 delStudentFromBase();
                 break;
-            case 10:
+            case 9:
                 preSortDataFromBase();
                 break;
-            case 11:
+            case 10:
                 break;
             default:
                 cout << "Введен неверный номер" << endl;
             }
-        } while (adminChoice != 11);
+        } while (adminChoice != 10);
         break;
     }
     default:
@@ -300,15 +297,14 @@ void adminMenu()
     cout << "5. Выполнение запроса (поиск двоечников)" << endl;
     cout << "\n";
     cout << "***ФУНКЦИИ ЭКСПОРТА***" << endl;
-    cout << "6. Экспорт в текстовый файл" << endl;
-    cout << "7. Экспорт в бинарный файл" << endl;
+    cout << "6. Экспорт в файл" << endl;
     cout << "\n";
     cout << "***ФУНКЦИИ РЕДАКТИРОВАНИЯ ДАННЫХ***" << endl;
-    cout << "8. Изменение записи" << endl;
-    cout << "9. Удаление записи" << endl;
-    cout << "10. Сортировка данных" << endl;
+    cout << "7. Изменение записи" << endl;
+    cout << "8. Удаление записи" << endl;
+    cout << "9. Сортировка данных" << endl;
     cout << endl;
-    cout << "11. Выход" << endl;
+    cout << "10. Выход" << endl;
     cout << "\nВведите номер команды: ";
 }
 void userMenu()
@@ -324,13 +320,12 @@ void userMenu()
     cout << "4. Выполнение запроса (поиск двоечников)" << endl;
     cout << "\n";
     cout << "***ФУНКЦИИ ЭКСПОРТА***" << endl;
-    cout << "5. Экспорт в текстовый файл" << endl;
-    cout << "6. Конвертация в бинарный файл" << endl;
+    cout << "5. Экспорт файл" << endl;
     cout << "\n";
     cout << "***ФУНКЦИИ РЕДАКТИРОВАНИЯ ДАННЫХ***" << endl;
-    cout << "7. Сортировка данных" << endl;
+    cout << "6. Сортировка данных" << endl;
     cout << endl;
-    cout << "8. Выход" << endl;
+    cout << "7. Выход" << endl;
     cout << "\nВведите номер команды: ";
 }
 // Функции ввода
@@ -863,55 +858,7 @@ void printAllDataFromBase()
     cout << "Нажмите кнопку, чтобы продолжить." << endl;
     cin.get();
 }
-void printStudentsWithBadMarks(vector<int> idStudentsWithBadMarks)
-{
-    cout << string(42, ' ');
-    cout << "===== СТУДЕНТЫ =====" << endl;
-    cout << endl;
-
-    // Заголовок таблицы
-    cout << "|";
-    cout << setw(4) << "ID" << " | ";
-    cout << setw(12) << "     Фамилия" << " | ";
-    cout << setw(12) << "         Имя" << " | ";
-    cout << setw(12) << "    Отчество" << " | ";
-    cout << setw(4) << "Курс" << " | ";
-    cout << setw(10) << "    Группа" << " | ";
-    cout << setw(5) << "  Год" << " | ";
-    cout << setw(5) << "  Мат" << " | " ;
-    cout << setw(5) << "   ВП" << " | " ;
-    cout << setw(5) << "  Рус" << " | " ;
-    cout << setw(5) << " Англ" << " | " ;
-    cout << setw(5) << "Химия" << " | \n" ;
-
-    // Разделитель
-    cout << string(119, '=') << "\n";
-
-    // Данные студентов
-    vector<Student> dataForExport;
-    for (Student student : Students) {
-        if (count(idStudentsWithBadMarks.begin(), idStudentsWithBadMarks.end(), student.id) == 0) continue;
-        dataForExport.push_back(student);
-        cout << string(119, '-') << "\n";
-        cout << setw(1) << "|";
-        cout << setw(4) << student.id << " | ";
-        cout << setw(12) << student.lastname << " | ";
-        cout << setw(12) << student.name << " | ";
-        cout << setw(12) << student.fathername << " | ";
-        cout << setw(4) << student.level << " | ";
-        cout << setw(10) << student.group << " | ";
-        cout << setw(5) << student.firstYear << " | ";
-        cout << setw(5) << student.marks[0] << " | ";
-        cout << setw(5) << student.marks[1] << " | ";
-        cout << setw(5) << student.marks[2] << " | ";
-        cout << setw(5) << student.marks[3] << " | ";
-        cout << setw(5) << student.marks[4] << " | \n";
-    }
-    cout << "Нажмите кнопку, чтобы продолжить." << endl;
-    cin.get();
-    preExportTxtFromList(dataForExport);
-}
-void printStudentsFromVector(vector<Student> studentsSortList)
+void printStudentsFromVector(vector<Student> studentsList)
 {
     bool arrayIsEmpty = FreeId.size() == 10;
     if (arrayIsEmpty)
@@ -943,7 +890,7 @@ void printStudentsFromVector(vector<Student> studentsSortList)
 
     // Данные студентов
     vector<Student> dataForExport;
-    for (Student student : studentsSortList)
+    for (Student student : studentsList)
     {
         if (student.id == 0) continue;
         dataForExport.push_back(student);
@@ -962,9 +909,7 @@ void printStudentsFromVector(vector<Student> studentsSortList)
         cout << setw(5) << student.marks[3] << " | ";
         cout << setw(5) << student.marks[4] << " | \n";
     }
-    cout << "Нажмите кнопку, чтобы продолжить." << endl;
-    cin.get();
-    preExportTxtFromList(dataForExport);
+    preExportFromList(dataForExport);
 }
 // Функции прочие
 void getIdStudentForChange()
@@ -1118,6 +1063,24 @@ int getCorrectId()
     fixStreamState();
     return n;
 }
+int getCorrectFormat()
+{
+    int n{};
+    bool isNotOk{};
+
+    do {
+        isNotOk = false;
+        regex pattern("[^1-3]");
+        if ((cin >> n).fail() or (n < 1 or n > 3)) {
+            fixStreamState();
+            cout << "Неверные данные!" << endl;
+            cout << "Введите число(1-3): " << endl;
+            isNotOk = true;
+        }
+    } while (isNotOk);
+    fixStreamState();
+    return n;
+}
 char getCorrectChar()
 {
     char n{};
@@ -1181,7 +1144,7 @@ void studentsWithBadMarksChek()
         cout << "База пуста" << endl;
         return;
     }
-    vector<int> idStudentsWithBadMarks{};
+    vector<Student> studentsWithBadMarks{};
     for (Student student : Students)
     {
         if (student.id == 0) continue;
@@ -1190,14 +1153,14 @@ void studentsWithBadMarksChek()
         {
             if (student.marks[i] == 2) countTwo++;
         }
-        if (countTwo >= 3) idStudentsWithBadMarks.push_back(student.id);
+        if (countTwo >= 3) studentsWithBadMarks.push_back(student);
     }
-    if (idStudentsWithBadMarks.empty())
+    if (studentsWithBadMarks.empty())
     {
         cout << "В базе нет студентов с двойками по трем и более предметам" << endl;
         return;
     }
-    printStudentsWithBadMarks(idStudentsWithBadMarks);
+    printStudentsFromVector(studentsWithBadMarks);
 }
 string toLower(string& str) {
     string result = str;
@@ -1216,25 +1179,61 @@ int getAverage(int* marksPoint)
     average = sumMarks / 5.000;
     return average;
 }
-void preExportTxtFromList(vector<Student> studentsForExportToTxt)
+void preExportFromList(vector<Student> studentsForExport)
 {
     char exportAccept{};
     cout << "Вы хотите сохранить эти данные в файл? (y/n)" << endl;
     exportAccept = getCorrectChar();
     if (exportAccept == 'y' or exportAccept == 'Y')
     {
-        cout << "Введите имя файла в который вы хотите сохранить данные (без формата)" << endl;
-        string txtFileName{};
-        cin >> txtFileName;
-        fixStreamState();
-        exportTxt(txtFileName, studentsForExportToTxt);
+        cout << "В каком формате вы хотите сохранить данные?" << endl;
+        cout << "1 - .txt" << endl;
+        cout << "2 - .dat" << endl;
+        cout << "3 - .bin" << endl;
+        int userChoiceFormat = getCorrectFormat();
+        switch (userChoiceFormat)
+        {
+            case 1:
+                {
+                    cout << "Введите имя файла в который вы хотите сохранить данные (без формата)" << endl;
+                    string txtFileName{};
+                    cin >> txtFileName;
+                    fixStreamState();
+                    exportTxt(txtFileName, studentsForExport);
+                    break;
+                }
+            case 2:
+                {
+                    cout << "Введите имя файла в который вы хотите сохранить данные (без формата)" << endl;
+                    string datFileName{}, format{".dat"};
+                    cin >> datFileName;
+                    fixStreamState();
+                    datFileName += format;
+                    exportBin(datFileName, studentsForExport);
+                    break;
+                }
+            case 3:
+                {
+                    cout << "Введите имя файла в который вы хотите сохранить данные (без формата)" << endl;
+                    string datFileName{}, format{".bin"};
+                    cin >> datFileName;
+                    fixStreamState();
+                    datFileName += format;
+                    exportBin(datFileName, studentsForExport);
+                    break;
+                }
+            default:
+                {
+                    cout << "Ошибочный ввод." << endl;
+                }
+        }
     }
     else
     {
         return;
     }
 }
-void preExportTxtFromMenu()
+void preExportFromMenu()
 {
     vector<Student> studentsToExport{};
     for (Student student : Students)
@@ -1274,4 +1273,19 @@ void exportTxt(string txtFileName, vector<Student> studentsToExportTxt)
     }
     txtFile.close();
     cout << "Данные успешно экспортированы в файл " << txtFileName + ".txt" << endl;
+}
+void exportBin(string binFileName, vector<Student> studentsToExportBin)
+{
+    if (studentsToExportBin.empty())
+    {
+        cout << "Нет студентов для экспорта" << endl;
+        return;
+    }
+    ofstream binFile(binFileName, ios::binary);
+    for (Student student : studentsToExportBin)
+    {
+        binFile.write(reinterpret_cast<char*>(&student), sizeof(student));
+    }
+    binFile.close();
+    cout << "Данные успешно экспортированы в файл " << binFileName << endl;
 }
