@@ -30,15 +30,18 @@ struct Student
 Student Students[10]{};
 vector<int> FreeId{ 1,2,3,4,5,6,7,8,9,10 };
 int UserType{};
+string CurentUserLogin{};
 // Конец области переменных
 
 // Область объявления функций
 int getLoginPass();//-
 int loadChekUserData(string login, string password);//-
+void checkLogin(int, string);
 void userMenu();//+
 void adminMenu();//+
 void loadFromTextFile();//-
 void loadFromBinFile();
+void loadFromCsv();
 void loadFromKeyboard();//+
 void parsingText(vector<string>);//+
 void fixStreamState();//-
@@ -70,8 +73,11 @@ template<typename Iterator, typename Comparator>
 void mySort(Iterator, Iterator, Comparator);
 void preExportFromList(vector<Student>);
 void preExportFromMenu();
+void preSaveCsv();
+void preLoadFromCsv();
 void exportTxt(string, vector<Student>);
 void exportBin(string, vector<Student>);
+void finalSaveCsv();
 // Конец область функций
 
 int main()
@@ -83,7 +89,8 @@ int main()
     {
     case 1:
     {
-
+        cout << "Здравствуйте, " << CurentUserLogin << endl;
+        preLoadFromCsv();
         // Пользователь
         int userChoice{};
         do
@@ -120,6 +127,8 @@ int main()
     }
     case 2:
     {
+        cout << "Здравствуйте, " << CurentUserLogin << endl;
+        preLoadFromCsv();
         // Администратор
         int adminChoice{};
         do
@@ -166,7 +175,7 @@ int main()
     default:
         cout << "Ошибка авторизации" << endl;
     }
-
+    preSaveCsv();
     return 0;
 }
 
@@ -284,7 +293,12 @@ int loadChekUserData(string login, string password)
         getLoginPass();
     }
     if (UserType != 1 and UserType != 2) UserType = 0;
+    checkLogin(UserType, login);
     return UserType;
+}
+void checkLogin(int userType, string login)
+{
+    if (userType == 1 or userType == 2) CurentUserLogin = login;
 }
 // Функции меню
 void adminMenu()
@@ -359,6 +373,7 @@ void loadFromTextFile()
                     txtLines.push_back(txtLine);
                 }
                 parsingText(txtLines);
+                txtFile.close();
             }
             else
             {
@@ -401,6 +416,7 @@ void loadFromBinFile()
                     studentsFromFile.push_back(student);
                 }
                 addNewStudent(studentsFromFile);
+                binFile.close();
             }
             else
             {
@@ -415,6 +431,26 @@ void loadFromBinFile()
     catch (...)
     {
         cout << "Ошибка! Неверный формат." << endl;
+    }
+}
+void loadFromCsv()
+{
+    ifstream csvFile(CurentUserLogin + ".csv");
+    if (csvFile.is_open())
+    {
+        cout << "Файл открыт успешно" << endl;
+        string csvLine{};
+        vector<string> csvLines{};
+        while (getline(csvFile, csvLine) and !csvLine.empty())
+        {
+            csvLines.push_back(csvLine);
+        }
+        parsingText(csvLines);
+        csvFile.close();
+    }
+    else
+    {
+        cout << "Ошибка открытия файла" << endl;
     }
 }
 void loadFromKeyboard()
@@ -546,7 +582,6 @@ void addNewStudent(vector<string> dataOneStudent)
     }
     sort(FreeId.begin(), FreeId.end());
     int studentId{ FreeId[0] };
-    FreeId.erase(FreeId.begin());
     int indexInVec{};
     try
     {
@@ -565,6 +600,7 @@ void addNewStudent(vector<string> dataOneStudent)
         newStudent.marks[4] = stoi(dataOneStudent[indexInVec++]);
         Students[studentId - 1] = newStudent;
         cout << "Студент добавлен c ID:" << newStudent.id << endl;
+        FreeId.erase(FreeId.begin());
     }
     catch (...)
     {
@@ -590,7 +626,6 @@ void addNewStudent(vector<Student> studentsToAdd)
         int idStudent{ FreeId[0] };
         try
         {
-            FreeId.erase(FreeId.begin());
             newStudent.id = idStudent;
             newStudent.lastname = student.lastname;
             newStudent.name = student.name;
@@ -605,6 +640,7 @@ void addNewStudent(vector<Student> studentsToAdd)
             newStudent.marks[4] = student.marks[4];
             Students[idStudent-1] = newStudent;
             cout << "Студент добавлен c ID:" << newStudent.id << endl;
+            FreeId.erase(FreeId.begin());
         }
         catch (...)
         {
@@ -1025,7 +1061,7 @@ void parsingText(vector<string> txtLines)
     for (string txtString : txtLines)
     {
         vector<string> dataOneStudent{};
-        if (indexString++ == 0) continue;
+        indexString++;
         stringstream ss(txtString);
         string word{};
         while (getline(ss, word, ';'))
@@ -1329,6 +1365,62 @@ void preExportFromMenu()
     }
     printStudentsFromVector(studentsToExport);
 }
+void preSaveCsv()
+{
+    if (FreeId.size() == 10) return;
+    cout << "Вы хотите сохранить результат этой сессии?(y/n)" << endl;
+    char userInput = getCorrectChar();
+    if (userInput != 'Y' and userInput != 'y') return;
+    finalSaveCsv();
+}
+void preLoadFromCsv()
+{
+    ifstream csvFile(CurentUserLogin+".csv");
+    csvFile.seekg(ios::end);
+    streampos size = csvFile.tellg();
+    if (size == 0) return;
+    if (csvFile.is_open())
+    {
+        cout << "Хотите ли вы загрузить данные последнего сохранения?(y/n)" << endl;
+        char userInput = getCorrectChar();
+        if (userInput == 'Y' or userInput == 'y')
+        {
+            csvFile.close();
+            loadFromCsv();
+            return;
+        }
+    }
+    csvFile.close();
+}
+void finalSaveCsv()
+{
+    ofstream csvFile(CurentUserLogin + ".csv");
+    if (!csvFile.is_open())
+    {
+        cout << "Ошибка открытия (создания) файла" << endl;
+        return;
+    }
+    csvFile << "Фамилия;" << "Имя;" << "Отчество;" << "Курс;" << "Группа;" << "Год_поступления;"
+        << "Оценка1;" << "Оценка2;" << "Оценка3;" << "Оценка4;" << "Оценка5;" << endl;
+    for (Student &student : Students)
+    {
+        if (student.id == 0) continue;
+        csvFile
+        << student.lastname << ";"
+        << student.name << ";"
+        << student.fathername << ";"
+        << student.level << ";"
+        << student.group << ";"
+        << student.firstYear << ";"
+        << student.marks[0] << ";"
+        << student.marks[1] << ";"
+        << student.marks[2] << ";"
+        << student.marks[3] << ";"
+        << student.marks[4] << endl;
+    }
+    csvFile.close();
+    cout << "Данные успешно сохранены в файл " << CurentUserLogin + ".csv" << endl;
+}
 void exportTxt(string txtFileName, vector<Student> studentsToExportTxt)
 {
     if (studentsToExportTxt.empty())
@@ -1342,8 +1434,6 @@ void exportTxt(string txtFileName, vector<Student> studentsToExportTxt)
         cout << "Ошибка открытия (создания) файла" << endl;
         return;
     }
-    txtFile << "Фамилия;Имя;Отчество;Курс;Группа;Год_поступления;"
-        << "Оценка1;Оценка2;Оценка3;Оценка4;Оценка5" << endl;
     for (Student student : studentsToExportTxt)
     {
         txtFile << student.lastname << ";"
