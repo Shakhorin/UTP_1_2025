@@ -38,7 +38,7 @@ int loadChekUserData(string login, string password);//-
 void userMenu();//+
 void adminMenu();//+
 void loadFromTextFile();//-
-void loadFronBinFile();
+void loadFromBinFile();
 void loadFromKeyboard();//+
 void parsingText(vector<string>);//+
 void fixStreamState();//-
@@ -59,6 +59,7 @@ string toLower(string&);//+
 int getAverage(int[]);//+
 // Функции взаимодействия с базой
 void addNewStudent(vector<string>);//+
+void addNewStudent(vector<Student>);
 void printAllDataFromBase();//+
 void printStudentsFromVector(vector<Student>);//+
 void delStudentFromBase();//+
@@ -95,6 +96,7 @@ int main()
                 loadFromTextFile();
                 break;
             case 2:
+                loadFromBinFile();
                 break;
             case 3:
                 printAllDataFromBase();
@@ -133,6 +135,7 @@ int main()
                 loadFromTextFile();
                 break;
             case 3:
+                loadFromBinFile();
                 break;
             case 4:
                 printAllDataFromBase();
@@ -397,7 +400,7 @@ void loadFromBinFile()
                 {
                     studentsFromFile.push_back(student);
                 }
-                // parsingText(studentsFromFile);
+                addNewStudent(studentsFromFile);
             }
             else
             {
@@ -566,6 +569,47 @@ void addNewStudent(vector<string> dataOneStudent)
     catch (...)
     {
         cout << "Данные в файле в неверном формате" << endl;
+    }
+}
+void addNewStudent(vector<Student> studentsToAdd)
+{
+    if (FreeId.empty())
+    {
+        cout << "Мест в базе нет" << endl;
+        return;
+    }
+    mySort(FreeId.begin(),FreeId.end(),[](int a, int b)->bool{return a < b;});
+    Student newStudent{};
+    for (Student &student : studentsToAdd)
+    {
+        if (FreeId.empty())
+        {
+            cout << "Загружено максимальное количество студентов" << endl;
+            break;
+        }
+        int idStudent{ FreeId[0] };
+        try
+        {
+            FreeId.erase(FreeId.begin());
+            newStudent.id = idStudent;
+            newStudent.lastname = student.lastname;
+            newStudent.name = student.name;
+            newStudent.fathername = student.fathername;
+            newStudent.level = student.level;
+            newStudent.group = student.group;
+            newStudent.firstYear = student.firstYear;
+            newStudent.marks[0] = student.marks[0];
+            newStudent.marks[1] = student.marks[1];
+            newStudent.marks[2] = student.marks[2];
+            newStudent.marks[3] = student.marks[3];
+            newStudent.marks[4] = student.marks[4];
+            Students[idStudent-1] = newStudent;
+            cout << "Студент добавлен c ID:" << newStudent.id << endl;
+        }
+        catch (...)
+        {
+            cout << "Данные в файле в неверном формате" << endl;
+        }
     }
 }
 void delStudentFromBase()
