@@ -35,8 +35,12 @@ string CurentUserLogin{};
 
 // Область объявления функций
 int getLoginPass();//-
-int loadChekUserData(string login, string password);//-
-void checkLogin(int, string);
+int chekUserData(string, string, vector<string>[]);//-
+int loadUserData(string, string);
+void toReg();
+void preRegNewUser();
+void regNewUserLoadFile(string, string);
+void regNewUser(vector<string>[]);
 void userMenu();//+
 void adminMenu();//+
 void loadFromTextFile();//-
@@ -84,7 +88,11 @@ int main()
 {
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
-    getLoginPass();
+    do
+    {
+        toReg();
+        UserType = getLoginPass();
+    }while (UserType == 0);
     switch (UserType)
     {
     case 1:
@@ -185,6 +193,7 @@ int main()
 int getLoginPass()
 {
     string login{}, password{};
+    cout << endl << "ВХОД" << endl;
     do
     {
         cout << "Введите логин:" << endl;
@@ -198,107 +207,238 @@ int getLoginPass()
         cin.ignore();
     } while (password.empty());
 
-    return  loadChekUserData(login, password);
+    return  loadUserData(login, password);
 }
-int loadChekUserData(string login, string password)
+int loadUserData(string login, string password)
 {
-    // Загрузка данных
-    vector<string> loginsAdmin{}, passwordsAdmin{};
-    vector<string> loginsUsers{}, passwordsUsers{};
-
-    ifstream userPassFile("Login_pass_user.txt");
-    if (userPassFile.is_open())
+    vector<string> dataVector[4]{};
+    ifstream dataFile("data.bin", ios::binary);
+    if (!dataFile.is_open())
     {
-        string line{};
-        int rotation{};
-        while (getline(userPassFile, line))
+        cout << "Файл с данными пользователей не открылся." << endl;
+    }else{
+        streampos adminLog{}, adminPas{}, userLog{}, userPas{}, end{};
+        dataFile.read(reinterpret_cast<char*>(&adminLog), sizeof(streampos));
+        dataFile.read(reinterpret_cast<char*>(&adminPas), sizeof(streampos));
+        dataFile.read(reinterpret_cast<char*>(&userLog), sizeof(streampos));
+        dataFile.read(reinterpret_cast<char*>(&userPas), sizeof(streampos));
+        dataFile.seekg(-sizeof(int),ios::end);
+        end = dataFile.tellg();
+        dataFile.seekg(adminLog);
+        while (dataFile.tellg() < adminPas)
         {
-            if (!line.empty())
-            {
-                rotation++;
-                if (rotation % 2 == 0)
-                {
-                    passwordsUsers.push_back(line);
-                }
-                else
-                {
-                    loginsUsers.push_back(line);
-                }
-            }
+            int lenStr{};
+            string str{};
+            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            str.resize(lenStr);
+            dataFile.read(&str[0], lenStr);
+            dataVector[0].push_back(str);
         }
-        userPassFile.close();
-    }
-    else
-    {
-        cout << "Ошибка. Файл с данными пользователей не открылся" << endl;
-    }
-    ifstream adminPassFile("Login_pass_admin.txt");
-    if (adminPassFile.is_open())
-    {
-        string line{};
-        int rotation{};
-        while (getline(adminPassFile, line))
+        dataFile.seekg(adminPas);
+        while (dataFile.tellg() < userLog)
         {
-            if (!line.empty())
-            {
-                rotation++;
-                if (rotation % 2 == 0)
-                {
-                    passwordsAdmin.push_back(line);
-                }
-                else
-                {
-                    loginsAdmin.push_back(line);
-                }
-            }
+            int lenStr{};
+            string str{};
+            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            str.resize(lenStr);
+            dataFile.read(&str[0], lenStr);
+            dataVector[1].push_back(str);
         }
-        adminPassFile.close();
+        dataFile.seekg(userLog);
+        while (dataFile.tellg() < userPas)
+        {
+            int lenStr{};
+            string str{};
+            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            str.resize(lenStr);
+            dataFile.read(&str[0], lenStr);
+            dataVector[2].push_back(str);
+        }
+        dataFile.seekg(userPas);
+        while (dataFile.tellg() < end)
+        {
+            int lenStr{};
+            string str{};
+            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            str.resize(lenStr);
+            dataFile.read(&str[0], lenStr);
+            dataVector[3].push_back(str);
+        }
+        dataFile.close();
     }
-    else
-    {
-        cout << "Ошибка. Файл с данными администраторов не открылся" << endl;
-    }
-
+    return chekUserData(login, password, dataVector);
+}
+int chekUserData(string login, string password, vector<string> dataUsers[])
+{
     // Авторизация
-
-    if (count(loginsUsers.begin(), loginsUsers.end(), login) != 0)
+    if (count(dataUsers[2].begin(), dataUsers[2].end(), login) != 0)
     {
-        if (passwordsUsers[distance(loginsUsers.begin(), find(loginsUsers.begin(), loginsUsers.end(), login))] == password)
+        if (dataUsers[3][distance(dataUsers[2].begin(), find(dataUsers[2].begin(), dataUsers[2].end(), login))] == password)
         {
             cout << "Вы авторизованы как пользователь" << endl;
-            UserType = 1;
+            CurentUserLogin = login;
+            return 1;
         }
         else
         {
             cout << "Неверный пароль. Повторите попытку" << endl;
-            getLoginPass();
+            return getLoginPass();
         }
     }
-    else if (count(loginsAdmin.begin(), loginsAdmin.end(), login) != 0)
+    else if (count(dataUsers[0].begin(), dataUsers[0].end(), login) != 0)
     {
-        if (passwordsAdmin[distance(loginsAdmin.begin(), find(loginsAdmin.begin(), loginsAdmin.end(), login))] == password)
+        if (dataUsers[1][distance(dataUsers[0].begin(), find(dataUsers[0].begin(), dataUsers[0].end(), login))] == password)
         {
             cout << "Вы авторизованы как администратор" << endl;
-            UserType = 2;
+            CurentUserLogin = login;
+            return 2;
         }
         else
         {
             cout << "Неверный пароль. Повторите попытку" << endl;
-            getLoginPass();
+            return getLoginPass();
         }
     }
     else
     {
-        cout << "Неверный логин. Повторите попытку" << endl;
-        getLoginPass();
+        cout << "Неверный логин" << endl;
+        return 0;
     }
-    if (UserType != 1 and UserType != 2) UserType = 0;
-    checkLogin(UserType, login);
-    return UserType;
 }
-void checkLogin(int userType, string login)
+void toReg()
 {
-    if (userType == 1 or userType == 2) CurentUserLogin = login;
+    cout << "Вы хотите зарегистрироваться?(y/n)" << endl;
+    char userInput = getCorrectChar();
+    if (userInput == 'Y' or userInput == 'y')
+    {
+        preRegNewUser();
+    }
+}
+void preRegNewUser()
+{
+    string login{}, password{};
+    cout << endl << "РЕГИСТРАЦИЯ" << endl;
+    do
+    {
+        cout << "Введите новый логин:" << endl;
+        cin >> login;
+        cin.ignore();
+    } while (login.empty());
+    do
+    {
+        cout << "Введите новый пароль" << endl;
+        cin >> password;
+        cin.ignore();
+    } while (password.empty());
+    regNewUserLoadFile(login, password);
+}
+void regNewUserLoadFile(string login, string password)
+{
+    vector<string> dataVector[4]{};
+    ifstream dataFile("data.bin", ios::binary);
+    if (!dataFile.is_open())
+    {
+        cout << "Файл с данными пользователей не открылся." << endl;
+    }else{
+        streampos adminLog{}, adminPas{}, userLog{}, userPas{}, end{};
+        dataFile.read(reinterpret_cast<char*>(&adminLog), sizeof(streampos));
+        dataFile.read(reinterpret_cast<char*>(&adminPas), sizeof(streampos));
+        dataFile.read(reinterpret_cast<char*>(&userLog), sizeof(streampos));
+        dataFile.read(reinterpret_cast<char*>(&userPas), sizeof(streampos));
+        dataFile.seekg(-sizeof(int), ios::end);
+        end = dataFile.tellg();
+        dataFile.seekg(adminLog);
+        while (dataFile.tellg() < adminPas)
+        {
+            int lenStr{};
+            string str{};
+            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            str.resize(lenStr);
+            dataFile.read(&str[0], lenStr);
+            dataVector[0].push_back(str);
+        }
+        dataFile.seekg(adminPas);
+        while (dataFile.tellg() < userLog)
+        {
+            int lenStr{};
+            string str{};
+            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            str.resize(lenStr);
+            dataFile.read(&str[0], lenStr);
+            dataVector[1].push_back(str);
+        }
+        dataFile.seekg(userLog);
+        while (dataFile.tellg() < userPas)
+        {
+            int lenStr{};
+            string str{};
+            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            str.resize(lenStr);
+            dataFile.read(&str[0], lenStr);
+            dataVector[2].push_back(str);
+        }
+        dataFile.seekg(userPas);
+        while (dataFile.tellg() < end)
+        {
+            int lenStr{};
+            string str{};
+            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            str.resize(lenStr);
+            dataFile.read(&str[0], lenStr);
+            dataVector[3].push_back(str);
+        }
+        dataFile.close();
+    }
+    if (count(dataVector[2].begin(), dataVector[2].end(), login) != 0)
+    {
+        cout << "Такой пользователь уже существует." << endl;
+        return;
+    }
+    dataVector[2].push_back(login);
+    dataVector[3].push_back(password);
+    regNewUser(dataVector);
+}
+void regNewUser(vector<string> updataUsers[])
+{
+    ofstream dataFile("data.bin", ios::binary);
+    streampos adminLog{}, adminPas{}, userLog{}, userPas{};
+    dataFile.seekp(sizeof(streampos)*4, ios::beg);
+    adminLog = dataFile.tellp();
+    for (string str : updataUsers[0])
+    {
+        int len = str.length();
+        dataFile.write(reinterpret_cast<char*>(&len),sizeof(int));
+        dataFile.write(str.c_str(), len);
+    }
+    adminPas = dataFile.tellp();
+    for (string str : updataUsers[1])
+    {
+        int len = str.length();
+        dataFile.write(reinterpret_cast<char*>(&len),sizeof(int));
+        dataFile.write(str.c_str(), len);
+    }
+    userLog = dataFile.tellp();
+    for (string str : updataUsers[2])
+    {
+        int len = str.length();
+        dataFile.write(reinterpret_cast<char*>(&len),sizeof(int));
+        dataFile.write(str.c_str(), len);
+    }
+    userPas = dataFile.tellp();
+    for (string str : updataUsers[3])
+    {
+        int len = str.length();
+        dataFile.write(reinterpret_cast<char*>(&len),sizeof(int));
+        dataFile.write(str.c_str(), len);
+    }
+    int end{};
+    dataFile.write(reinterpret_cast<char*>(&end),sizeof(int));
+    dataFile.seekp(ios::beg);
+    dataFile.write(reinterpret_cast<char*>(&adminLog), sizeof(streampos));
+    dataFile.write(reinterpret_cast<char*>(&adminPas), sizeof(streampos));
+    dataFile.write(reinterpret_cast<char*>(&userLog), sizeof(streampos));
+    dataFile.write(reinterpret_cast<char*>(&userPas), sizeof(streampos));
+    dataFile.close();
 }
 // Функции меню
 void adminMenu()
