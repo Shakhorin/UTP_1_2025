@@ -70,7 +70,7 @@ void addNewStudent(vector<Student>);
 void printAllDataFromBase();//+
 void printStudentsFromVector(vector<Student>);//+
 void delStudentFromBase();//+
-void changeStudentData(vector<string>, int);//+
+void changeStudentData(Student, int);//+
 void preSortDataFromBase();
 void sortStudent(int, int, vector<Student>);
 template<typename Iterator, typename Comparator>
@@ -652,59 +652,140 @@ void loadChangeDataFromKeyboard(int idStudentForChange)
             break;
         }
     }
-    vector<string> dataOneStudent{};
-    cout << "ВНИМАНИЕ! ДЛЯ ВВОДА ДАННЫХ ИСПОЛЬЗУЙТЕ ЛАТИНСКИЙ АЛФАВИТ" << endl;
-    cout << "Введите фамилию(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
-    cout << "Старое значение:" << studentForChange.lastname << endl;
-    string lastname{};
-    lastname = getCorrectFIO();
-    dataOneStudent.push_back(lastname);
-    cout << "Введите имя(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
-    cout << "Старое значение:" << studentForChange.name << endl;
-    string name{};
-    name = getCorrectFIO();
-    dataOneStudent.push_back(name);
-    cout << "Введите отчество(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
-    cout << "Старое значение:" << studentForChange.fathername << endl;
-    string fathername{};
-    fathername = getCorrectFIO();
-    dataOneStudent.push_back(fathername);
-    cout << "Введите курс(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
-    cout << "Старое значение:" << studentForChange.level << endl;
-    int level_i{};
-    string level{};
-    level_i = getCorrectLevel();
-    level = to_string(level_i);
-    dataOneStudent.push_back(level);
-    cout << "Введите группу заглавными буквами(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
-    cout << "Старое значение:" << studentForChange.group << endl;
-    string group{};
-    group = getCorrectGroup();
-    dataOneStudent.push_back(group);
-    cout << "Введите год поступления(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
-    cout << "Старое значение:" << studentForChange.firstYear << endl;
-    string firstYear{};
-    int firstYear_i{};
-    firstYear_i = getCorrectFirstYear();
-    firstYear = to_string(firstYear_i);
-    dataOneStudent.push_back(firstYear);
-    cout << "Введите 5 оценок(Если будет введена строка с пробелом, то будут использованы первые пять оценок)" << endl;
-    cout << "Вводите оценки в порядке: Матан, ВП, Рус.яз, Англ.яз, Химия" << endl;
-    cout << "Старое значение: ";
-    for (int mark : studentForChange.marks)
+    int fildNumber{};
+    cout << "Выберите поле (поля) для изменения" << endl;
+    cout << "1 - Фамилия" <<endl;
+    cout << "2 - Имя" <<endl;
+    cout << "3 - Отчество" <<endl;
+    cout << "4 - Курс" <<endl;
+    cout << "5 - Группа" <<endl;
+    cout << "6 - Год поступления" <<endl;
+    cout << "7 - Отметки" <<endl;
+    cout << "8 - Хотите изменить несколько полей" <<endl;
+    fildNumber = getCorrectValue();
+    switch (fildNumber)
     {
-        cout << mark << " ";
+        case 1:
+            {
+                cout << "Введите фамилию(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+                cout << "Старое значение:" << studentForChange.lastname << endl;
+                string lastname{};
+                lastname = getCorrectFIO();
+                studentForChange.lastname = lastname;
+                break;
+            }
+        case 2:
+            {
+                cout << "Введите имя(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+                cout << "Старое значение:" << studentForChange.name << endl;
+                string name{};
+                name = getCorrectFIO();
+                studentForChange.name = name;
+                break;
+            }
+        case 3:
+            {
+                cout << "Введите отчество(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+                cout << "Старое значение:" << studentForChange.fathername << endl;
+                string fathername{};
+                fathername = getCorrectFIO();
+                studentForChange.fathername = fathername;
+                break;
+            }
+        case 4:
+            {
+                cout << "Введите курс(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+                cout << "Старое значение:" << studentForChange.level << endl;
+                int level{};
+                level = getCorrectLevel();
+                studentForChange.level = level;
+                break;
+            }
+        case 5:
+            {
+                cout << "Введите группу заглавными буквами(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+                cout << "Старое значение:" << studentForChange.group << endl;
+                string group{};
+                group = getCorrectGroup();
+                studentForChange.group = group;
+                break;
+            }
+        case 6:
+            {
+                cout << "Введите год поступления(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+                cout << "Старое значение:" << studentForChange.firstYear << endl;
+                int firstYear{};
+                firstYear = getCorrectFirstYear();
+                studentForChange.firstYear = firstYear;
+                break;
+            }
+        case 7:
+            {
+                cout << "Введите 5 оценок(Если будет введена строка с пробелом, то будут использованы первые пять оценок)" << endl;
+                cout << "Вводите оценки в порядке: Матан, ВП, Рус.яз, Англ.яз, Химия" << endl;
+                cout << "Старое значение: ";
+                for (int mark : studentForChange.marks)
+                {
+                    cout << mark << " ";
+                }
+                cout << endl;
+                int marks[5]{};
+                for (int i = 0; i < 5; i++)
+                {
+                    marks[i] = getCorrectMark();
+                    studentForChange.marks[i] = marks[i];
+                }
+                break;
+            }
+        default:
+            {
+                cout << "Введите фамилию(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+                cout << "Старое значение:" << studentForChange.lastname << endl;
+                string lastname{};
+                lastname = getCorrectFIO();
+                studentForChange.lastname = lastname;
+                cout << "Введите имя(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+                cout << "Старое значение:" << studentForChange.name << endl;
+                string name{};
+                name = getCorrectFIO();
+                studentForChange.name = name;
+                cout << "Введите отчество(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+                cout << "Старое значение:" << studentForChange.fathername << endl;
+                string fathername{};
+                fathername = getCorrectFIO();
+                studentForChange.fathername = fathername;
+                cout << "Введите курс(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+                cout << "Старое значение:" << studentForChange.level << endl;
+                int level{};
+                level = getCorrectLevel();
+                studentForChange.level = level;
+                cout << "Введите группу заглавными буквами(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+                cout << "Старое значение:" << studentForChange.group << endl;
+                string group{};
+                group = getCorrectGroup();
+                studentForChange.group = group;
+                cout << "Введите год поступления(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+                cout << "Старое значение:" << studentForChange.firstYear << endl;
+                int firstYear{};
+                firstYear = getCorrectFirstYear();
+                studentForChange.firstYear = firstYear;
+                cout << "Введите 5 оценок(Если будет введена строка с пробелом, то будут использованы первые пять оценок)" << endl;
+                cout << "Вводите оценки в порядке: Матан, ВП, Рус.яз, Англ.яз, Химия" << endl;
+                cout << "Старое значение: ";
+                for (int mark : studentForChange.marks)
+                {
+                    cout << mark << " ";
+                }
+                cout << endl;
+                int marks[5]{};
+                for (int i = 0; i < 5; i++)
+                {
+                    marks[i] = getCorrectMark();
+                    studentForChange.marks[i] = marks[i];
+                }
+            }
     }
-    cout << endl;
-    int marks[5]{};
-    for (int i = 0; i < 5; i++)
-    {
-        marks[i] = getCorrectMark();
-        string mark = to_string(marks[i]);
-        dataOneStudent.push_back(mark);
-    }
-    fixStreamState();
-    changeStudentData(dataOneStudent, idStudentForChange);
+    changeStudentData(studentForChange, idStudentForChange);
 }
 // Функции взаибодействия с массивом
 void addNewStudent(vector<string> dataOneStudent)
@@ -824,31 +905,17 @@ void delStudentFromBase()
         indexStudentForDel++;
     }
 }
-void changeStudentData(vector<string> updataOneStudent, int idStudentForChange)
+void changeStudentData(Student newStudent, int idStudentForChange)
 {
-    int indexInVec{};
     try
     {
-        Student newStudent{};
-        newStudent.id = idStudentForChange;
-        newStudent.lastname = updataOneStudent[indexInVec++];
-        newStudent.name = updataOneStudent[indexInVec++];
-        newStudent.fathername = updataOneStudent[indexInVec++];
-        newStudent.level = stoi(updataOneStudent[indexInVec++]);
-        newStudent.group = updataOneStudent[indexInVec++];
-        newStudent.firstYear = stoi(updataOneStudent[indexInVec++]);
-        newStudent.marks[0] = stoi(updataOneStudent[indexInVec++]);
-        newStudent.marks[1] = stoi(updataOneStudent[indexInVec++]);
-        newStudent.marks[2] = stoi(updataOneStudent[indexInVec++]);
-        newStudent.marks[3] = stoi(updataOneStudent[indexInVec++]);
-        newStudent.marks[4] = stoi(updataOneStudent[indexInVec++]);
         Students[idStudentForChange - 1] = newStudent;
         cout << "Студент изменен c ID:" << newStudent.id << endl;
-    }
-    catch (...)
+    }catch (...)
     {
-        cout << "Данные в файле в неверном формате" << endl;
+        cout << "Произошла ошибка добавления" << endl;
     }
+
 }
 void preSortDataFromBase() {
     vector <Student> studentsForSort{};
