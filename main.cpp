@@ -34,22 +34,25 @@ string CurentUserLogin{};
 // Конец области переменных
 
 // Область объявления функций
-int getLoginPass();//-
-int chekUserData(string, string, vector<string>[]);//-
-int loadUserData(string, string);
-void toReg();
-void preRegNewUser();
-void regNewUserLoadFile(string, string);
-void regNewUser(vector<string>[]);
+int getLoginPass();//+
+int chekUserData(string, string, vector<string>[]);//+
+int loadUserData(string, string);//+
+void toReg();//+
+void preRegNewUser();//+
+void regNewUserLoadFile(string, string);//+
+void regNewUser(vector<string>[]);//+
+void changeStatusUsersLoad();//+
+void changeStatusUsers(vector<string>[]);//+
 void userMenu();//+
 void adminMenu();//+
-void loadFromTextFile();//-
-void loadFromBinFile();
-void loadFromCsv();
+void loadFromTextFile();//+
+void loadFromBinFile();//+
+void loadFromCsv();//+
 void loadFromKeyboard();//+
 void parsingText(vector<string>);//+
 void fixStreamState();//-
 int getCorrectValue();//+
+int getCorrectLogin(int);//+
 bool freeIdCheck();//+
 int getCorrectMark();//+
 int getCorrectLevel();//+
@@ -71,20 +74,20 @@ void printAllDataFromBase();//+
 void printStudentsFromVector(vector<Student>);//+
 void delStudentFromBase();//+
 void changeStudentData(Student, int);//+
-void preSortDataFromBase();
-void sortStudent(int, int, vector<Student>);
+void preSortDataFromBase();//+
+void sortStudent(int, int, vector<Student>);//+
 template<typename Iterator, typename Comparator>
-void mySort(Iterator, Iterator, Comparator);
-void preExportFromList(vector<Student>);
-void preExportFromMenu();
-void preSaveCsv();
-void preLoadFromCsv();
-void exportTxt(string, vector<Student>);
-void exportBin(string, vector<Student>);
-void finalSaveCsv();
+void mySort(Iterator, Iterator, Comparator);//+
+void preExportFromList(vector<Student>);//+
+void preExportFromMenu();//+
+void preSaveCsv();//+
+void preLoadFromCsv();//+
+void exportTxt(string, vector<Student>);//+
+void exportBin(string, vector<Student>);//+
+void finalSaveCsv();//+
 // Конец область функций
 
-int main()
+int main()//+
 {
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
@@ -173,11 +176,14 @@ int main()
                 preSortDataFromBase();
                 break;
             case 10:
+                changeStatusUsersLoad();
+                break;
+            case 11:
                 break;
             default:
                 cout << "Введен неверный номер" << endl;
             }
-        } while (adminChoice != 10);
+        } while (adminChoice != 11);
         break;
     }
     default:
@@ -439,6 +445,92 @@ void regNewUser(vector<string> updataUsers[])
     dataFile.write(reinterpret_cast<char*>(&userLog), sizeof(streampos));
     dataFile.write(reinterpret_cast<char*>(&userPas), sizeof(streampos));
     dataFile.close();
+    cout << "Изменения сохранены" << endl;
+}
+void changeStatusUsersLoad()
+{
+    vector<string> dataVector[4]{};
+    ifstream dataFile("data.bin", ios::binary);
+    if (!dataFile.is_open())
+    {
+        cout << "Файл с данными пользователей не открылся." << endl;
+    }else{
+        streampos adminLog{}, adminPas{}, userLog{}, userPas{}, end{};
+        dataFile.read(reinterpret_cast<char*>(&adminLog), sizeof(streampos));
+        dataFile.read(reinterpret_cast<char*>(&adminPas), sizeof(streampos));
+        dataFile.read(reinterpret_cast<char*>(&userLog), sizeof(streampos));
+        dataFile.read(reinterpret_cast<char*>(&userPas), sizeof(streampos));
+        dataFile.seekg(-sizeof(int),ios::end);
+        end = dataFile.tellg();
+        dataFile.seekg(adminLog);
+        while (dataFile.tellg() < adminPas)
+        {
+            int lenStr{};
+            string str{};
+            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            str.resize(lenStr);
+            dataFile.read(&str[0], lenStr);
+            dataVector[0].push_back(str);
+        }
+        dataFile.seekg(adminPas);
+        while (dataFile.tellg() < userLog)
+        {
+            int lenStr{};
+            string str{};
+            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            str.resize(lenStr);
+            dataFile.read(&str[0], lenStr);
+            dataVector[1].push_back(str);
+        }
+        dataFile.seekg(userLog);
+        while (dataFile.tellg() < userPas)
+        {
+            int lenStr{};
+            string str{};
+            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            str.resize(lenStr);
+            dataFile.read(&str[0], lenStr);
+            dataVector[2].push_back(str);
+        }
+        dataFile.seekg(userPas);
+        while (dataFile.tellg() < end)
+        {
+            int lenStr{};
+            string str{};
+            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            str.resize(lenStr);
+            dataFile.read(&str[0], lenStr);
+            dataVector[3].push_back(str);
+        }
+        dataFile.close();
+    }
+    if (!dataVector[2].empty())
+    {
+        changeStatusUsers(dataVector);
+    }else
+    {
+        cout << "Нет пользователей" << endl;
+    }
+}
+void changeStatusUsers(vector<string> dataVector[])
+{
+    int userNum{}, k{};
+    cout << "Выберите пользователя для изменения статуса" << endl;
+    for (string login : dataVector[2])
+    {
+        k++;
+        cout << k << ". " << login << endl;
+    }
+    k++;
+    cout << k << ". " << "Отмена" << endl;
+    userNum = getCorrectLogin(k);
+    if (userNum == k) return;
+    userNum--;
+    dataVector[0].push_back(dataVector[2][userNum]);
+    dataVector[1].push_back(dataVector[3][userNum]);
+    dataVector[2].erase(dataVector[2].begin() + userNum);
+    dataVector[3].erase(dataVector[3].begin() + userNum);
+    regNewUser(dataVector);
 }
 // Функции меню
 void adminMenu()
@@ -462,7 +554,9 @@ void adminMenu()
     cout << "8. Удаление записи" << endl;
     cout << "9. Сортировка данных" << endl;
     cout << endl;
-    cout << "10. Выход" << endl;
+    cout << "10. Изменить статус пользователелей" << endl;
+    cout << endl;
+    cout << "11. Выход" << endl;
     cout << "\nВведите номер команды: ";
 }
 void userMenu()
@@ -1299,6 +1393,23 @@ int getCorrectValue() {
         isNotOk = false;
         regex pattern("[^0-9]");
         if ((cin >> n).fail()) {
+            fixStreamState();
+            cout << "Неверный тип данных!" << endl;
+            cout << "Введите число(int): " << endl;
+            isNotOk = true;
+        }
+    } while (isNotOk);
+    fixStreamState();
+    return n;
+}
+int getCorrectLogin(int k)
+{
+    int n{};
+    bool isNotOk{};
+
+    do {
+        isNotOk = false;
+        if ((cin >> n).fail() or n > k) {
             fixStreamState();
             cout << "Неверный тип данных!" << endl;
             cout << "Введите число(int): " << endl;
