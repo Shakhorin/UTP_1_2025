@@ -9,8 +9,13 @@
 #include <sstream>
 #include <regex>
 #include <numeric>
-#define NOMINMAX
-#include <windows.h>
+#ifdef _linux_
+    #include <clocale>
+    #include <locale>
+#else
+    #define NOMINMAX
+    #include <windows.h>
+#endif
 
 using namespace std;
 
@@ -31,6 +36,11 @@ Student Students[10]{};
 vector<int> FreeId{ 1,2,3,4,5,6,7,8,9,10 };
 int UserType{};
 string CurentUserLogin{};
+#ifdef _linux_
+    string LoginPassFile = "dataLinux.bin";
+#else
+    string LoginPassFile = "dataWin.bin";
+#endif
 // Конец области переменных
 
 // Область объявления функций
@@ -89,8 +99,13 @@ void finalSaveCsv();//+
 
 int main()//+
 {
-    SetConsoleCP(1251);
-    SetConsoleOutputCP(1251);
+    #ifdef _linux_
+        cout << "Linux" << endl;
+    #else
+        cout << "Windows" << endl;
+        SetConsoleCP(1251);
+        SetConsoleOutputCP(1251);
+    #endif
     do
     {
         toReg();
@@ -218,7 +233,7 @@ int getLoginPass()
 int loadUserData(string login, string password)
 {
     vector<string> dataVector[4]{};
-    ifstream dataFile("data.bin", ios::binary);
+    ifstream dataFile(LoginPassFile, ios::binary);
     if (!dataFile.is_open())
     {
         cout << "Файл с данными пользователей не открылся." << endl;
@@ -341,7 +356,7 @@ void preRegNewUser()
 void regNewUserLoadFile(string login, string password)
 {
     vector<string> dataVector[4]{};
-    ifstream dataFile("data.bin", ios::binary);
+    ifstream dataFile(LoginPassFile, ios::binary);
     if (!dataFile.is_open())
     {
         cout << "Файл с данными пользователей не открылся." << endl;
@@ -406,7 +421,7 @@ void regNewUserLoadFile(string login, string password)
 }
 void regNewUser(vector<string> updataUsers[])
 {
-    ofstream dataFile("data.bin", ios::binary);
+    ofstream dataFile(LoginPassFile, ios::binary);
     streampos adminLog{}, adminPas{}, userLog{}, userPas{};
     dataFile.seekp(sizeof(streampos)*4, ios::beg);
     adminLog = dataFile.tellp();
@@ -450,7 +465,7 @@ void regNewUser(vector<string> updataUsers[])
 void changeStatusUsersLoad()
 {
     vector<string> dataVector[4]{};
-    ifstream dataFile("data.bin", ios::binary);
+    ifstream dataFile(LoginPassFile, ios::binary);
     if (!dataFile.is_open())
     {
         cout << "Файл с данными пользователей не открылся." << endl;
