@@ -105,7 +105,7 @@ int main()//+
         SetConsoleOutputCP(1251);
     #else
         cout << "Linux" << endl;
-        setlocale(LC_ALL, "ru_RU.utf16")
+        setlocale(LC_ALL, "ru_RU.cp1251")
     #endif
     do
     {
@@ -240,10 +240,10 @@ int loadUserData(string login, string password)
         cout << "Файл с данными пользователей не открылся." << endl;
     }else{
         streampos adminLog{}, adminPas{}, userLog{}, userPas{}, end{};
-        dataFile.read(reinterpret_cast<char*>(&adminLog), sizeof(streampos));
-        dataFile.read(reinterpret_cast<char*>(&adminPas), sizeof(streampos));
-        dataFile.read(reinterpret_cast<char*>(&userLog), sizeof(streampos));
-        dataFile.read(reinterpret_cast<char*>(&userPas), sizeof(streampos));
+        dataFile.read((char*)&adminLog, sizeof(streampos));
+        dataFile.read((char*)&adminPas, sizeof(streampos));
+        dataFile.read((char*)&userLog, sizeof(streampos));
+        dataFile.read((char*)&userPas, sizeof(streampos));
         dataFile.seekg(-sizeof(int),ios::end);
         end = dataFile.tellg();
         dataFile.seekg(adminLog);
@@ -251,7 +251,7 @@ int loadUserData(string login, string password)
         {
             int lenStr{};
             string str{};
-            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            dataFile.read((char*)&lenStr, sizeof(int));
             str.resize(lenStr);
             dataFile.read(&str[0], lenStr);
             dataVector[0].push_back(str);
@@ -261,7 +261,7 @@ int loadUserData(string login, string password)
         {
             int lenStr{};
             string str{};
-            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            dataFile.read((char*)&lenStr, sizeof(int));
             str.resize(lenStr);
             dataFile.read(&str[0], lenStr);
             dataVector[1].push_back(str);
@@ -271,7 +271,7 @@ int loadUserData(string login, string password)
         {
             int lenStr{};
             string str{};
-            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            dataFile.read((char*)&lenStr, sizeof(int));
             str.resize(lenStr);
             dataFile.read(&str[0], lenStr);
             dataVector[2].push_back(str);
@@ -281,7 +281,7 @@ int loadUserData(string login, string password)
         {
             int lenStr{};
             string str{};
-            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            dataFile.read((char*)&lenStr, sizeof(int));
             str.resize(lenStr);
             dataFile.read(&str[0], lenStr);
             dataVector[3].push_back(str);
@@ -363,10 +363,10 @@ void regNewUserLoadFile(string login, string password)
         cout << "Файл с данными пользователей не открылся." << endl;
     }else{
         streampos adminLog{}, adminPas{}, userLog{}, userPas{}, end{};
-        dataFile.read(reinterpret_cast<char*>(&adminLog), sizeof(streampos));
-        dataFile.read(reinterpret_cast<char*>(&adminPas), sizeof(streampos));
-        dataFile.read(reinterpret_cast<char*>(&userLog), sizeof(streampos));
-        dataFile.read(reinterpret_cast<char*>(&userPas), sizeof(streampos));
+        dataFile.read((char*)&adminLog, sizeof(streampos));
+        dataFile.read((char*)&adminPas, sizeof(streampos));
+        dataFile.read((char*)&userLog, sizeof(streampos));
+        dataFile.read((char*)&userPas, sizeof(streampos));
         dataFile.seekg(-sizeof(int), ios::end);
         end = dataFile.tellg();
         dataFile.seekg(adminLog);
@@ -374,7 +374,7 @@ void regNewUserLoadFile(string login, string password)
         {
             int lenStr{};
             string str{};
-            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            dataFile.read((char*)&lenStr, sizeof(int));
             str.resize(lenStr);
             dataFile.read(&str[0], lenStr);
             dataVector[0].push_back(str);
@@ -384,7 +384,7 @@ void regNewUserLoadFile(string login, string password)
         {
             int lenStr{};
             string str{};
-            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            dataFile.read((char*)&lenStr, sizeof(int));
             str.resize(lenStr);
             dataFile.read(&str[0], lenStr);
             dataVector[1].push_back(str);
@@ -394,7 +394,7 @@ void regNewUserLoadFile(string login, string password)
         {
             int lenStr{};
             string str{};
-            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            dataFile.read((char*)&lenStr, sizeof(int));
             str.resize(lenStr);
             dataFile.read(&str[0], lenStr);
             dataVector[2].push_back(str);
@@ -404,7 +404,7 @@ void regNewUserLoadFile(string login, string password)
         {
             int lenStr{};
             string str{};
-            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            dataFile.read((char*)&lenStr, sizeof(int));
             str.resize(lenStr);
             dataFile.read(&str[0], lenStr);
             dataVector[3].push_back(str);
@@ -429,37 +429,37 @@ void regNewUser(vector<string> updataUsers[])
     for (string str : updataUsers[0])
     {
         int len = str.length();
-        dataFile.write(reinterpret_cast<char*>(&len),sizeof(int));
+        dataFile.write((char*)&len,sizeof(int));
         dataFile.write(str.c_str(), len);
     }
     adminPas = dataFile.tellp();
     for (string str : updataUsers[1])
     {
         int len = str.length();
-        dataFile.write(reinterpret_cast<char*>(&len),sizeof(int));
+        dataFile.write((char*)&len,sizeof(int));
         dataFile.write(str.c_str(), len);
     }
     userLog = dataFile.tellp();
     for (string str : updataUsers[2])
     {
         int len = str.length();
-        dataFile.write(reinterpret_cast<char*>(&len),sizeof(int));
+        dataFile.write((char*)&len,sizeof(int));
         dataFile.write(str.c_str(), len);
     }
     userPas = dataFile.tellp();
     for (string str : updataUsers[3])
     {
         int len = str.length();
-        dataFile.write(reinterpret_cast<char*>(&len),sizeof(int));
+        dataFile.write((char*)&len,sizeof(int));
         dataFile.write(str.c_str(), len);
     }
     int end{};
-    dataFile.write(reinterpret_cast<char*>(&end),sizeof(int));
+    dataFile.write((char*)&end,sizeof(int));
     dataFile.seekp(ios::beg);
-    dataFile.write(reinterpret_cast<char*>(&adminLog), sizeof(streampos));
-    dataFile.write(reinterpret_cast<char*>(&adminPas), sizeof(streampos));
-    dataFile.write(reinterpret_cast<char*>(&userLog), sizeof(streampos));
-    dataFile.write(reinterpret_cast<char*>(&userPas), sizeof(streampos));
+    dataFile.write((char*)&adminLog, sizeof(streampos));
+    dataFile.write((char*)&adminPas, sizeof(streampos));
+    dataFile.write((char*)&userLog, sizeof(streampos));
+    dataFile.write((char*)&userPas, sizeof(streampos));
     dataFile.close();
     cout << "Изменения сохранены" << endl;
 }
@@ -472,10 +472,10 @@ void changeStatusUsersLoad()
         cout << "Файл с данными пользователей не открылся." << endl;
     }else{
         streampos adminLog{}, adminPas{}, userLog{}, userPas{}, end{};
-        dataFile.read(reinterpret_cast<char*>(&adminLog), sizeof(streampos));
-        dataFile.read(reinterpret_cast<char*>(&adminPas), sizeof(streampos));
-        dataFile.read(reinterpret_cast<char*>(&userLog), sizeof(streampos));
-        dataFile.read(reinterpret_cast<char*>(&userPas), sizeof(streampos));
+        dataFile.read((char*)&adminLog, sizeof(streampos));
+        dataFile.read((char*)&adminPas, sizeof(streampos));
+        dataFile.read((char*)&userLog, sizeof(streampos));
+        dataFile.read((char*)&userPas, sizeof(streampos));
         dataFile.seekg(-sizeof(int),ios::end);
         end = dataFile.tellg();
         dataFile.seekg(adminLog);
@@ -483,7 +483,7 @@ void changeStatusUsersLoad()
         {
             int lenStr{};
             string str{};
-            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            dataFile.read((char*)&lenStr, sizeof(int));
             str.resize(lenStr);
             dataFile.read(&str[0], lenStr);
             dataVector[0].push_back(str);
@@ -493,7 +493,7 @@ void changeStatusUsersLoad()
         {
             int lenStr{};
             string str{};
-            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            dataFile.read((char*)&lenStr, sizeof(int));
             str.resize(lenStr);
             dataFile.read(&str[0], lenStr);
             dataVector[1].push_back(str);
@@ -503,7 +503,7 @@ void changeStatusUsersLoad()
         {
             int lenStr{};
             string str{};
-            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            dataFile.read((char*)&lenStr, sizeof(int));
             str.resize(lenStr);
             dataFile.read(&str[0], lenStr);
             dataVector[2].push_back(str);
@@ -513,7 +513,7 @@ void changeStatusUsersLoad()
         {
             int lenStr{};
             string str{};
-            dataFile.read(reinterpret_cast<char*>(&lenStr), sizeof(int));
+            dataFile.read((char*)&lenStr, sizeof(int));
             str.resize(lenStr);
             dataFile.read(&str[0], lenStr);
             dataVector[3].push_back(str);
@@ -661,7 +661,7 @@ void loadFromBinFile()
             {
                 cout << "Файл открыт успешно" << endl;
                 Student student{};
-                while (binFile.read(reinterpret_cast<char*>(&student), sizeof(student)))
+                while (binFile.read((char*)&student, sizeof(student)))
                 {
                     studentsFromFile.push_back(student);
                 }
@@ -1795,7 +1795,7 @@ void exportBin(string binFileName, vector<Student> studentsToExportBin)
     ofstream binFile(binFileName, ios::binary);
     for (Student student : studentsToExportBin)
     {
-        binFile.write(reinterpret_cast<char*>(&student), sizeof(student));
+        binFile.write((char*)&student, sizeof(student));
     }
     binFile.close();
     cout << "Данные успешно экспортированы в файл " << binFileName << endl;
