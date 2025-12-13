@@ -9,12 +9,12 @@
 #include <sstream>
 #include <regex>
 #include <numeric>
-#ifdef _linux_
-    #include <clocale>
-    #include <locale>
-#else
+#ifdef WIN32
     #define NOMINMAX
     #include <windows.h>
+#else
+    #include <clocale>
+    #include <locale>
 #endif
 
 using namespace std;
@@ -36,10 +36,10 @@ Student Students[10]{};
 vector<int> FreeId{ 1,2,3,4,5,6,7,8,9,10 };
 int UserType{};
 string CurentUserLogin{};
-#ifdef _linux_
-    string LoginPassFile = "dataLinux.bin";
-#else
+#ifdef WIN32
     string LoginPassFile = "dataWin.bin";
+#else
+    string LoginPassFile = "dataLinux.bin";
 #endif
 // Конец области переменных
 
@@ -99,12 +99,13 @@ void finalSaveCsv();//+
 
 int main()//+
 {
-    #ifdef _linux_
-        cout << "Linux" << endl;
-    #else
+    #ifdef WIN32
         cout << "Windows" << endl;
         SetConsoleCP(1251);
         SetConsoleOutputCP(1251);
+    #else
+        cout << "Linux" << endl;
+        setlocale(LC_ALL, "ru_RU.utf16")
     #endif
     do
     {
@@ -1560,7 +1561,7 @@ string getCorrectFIO()
     do {
         isNotOk = false;
         cin >> n;
-        regex pattern("[^A-ZА-Яa-zа-я]");
+        regex pattern("[^A-ZА-Яa-zа-я-']");
         if (n.length() < 2 or regex_search(n, pattern)) {
             fixStreamState();
             cout << "Неверное значение!" << endl;
