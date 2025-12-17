@@ -95,8 +95,6 @@ void preLoadFromCsv();//+
 void exportTxt(string, vector<Student>);//+
 void exportBin(string, vector<Student>);//+
 void finalSaveCsv();//+
-int utf8_len(const string&);
-void print_padded(const string&, int);
 // Конец область функций
 
 int main()//+
@@ -107,7 +105,7 @@ int main()//+
         SetConsoleOutputCP(1251);
     #else
         cout << "Linux" << endl;
-        setlocale(LC_ALL, "ru_RU.cp1251");
+        setlocale(LC_ALL, "ru_RU.cp1251")
     #endif
     do
     {
@@ -212,21 +210,7 @@ int main()//+
 }
 
 // Область реализации функций
-int utf8_len(const std::string &s) {
-  int count = 0;
-  for (unsigned char c : s) {
-    if ((c & 0xC0) != 0x80)
-      ++count;
-  }
-  return count;
-}
 
-void print_padded(const std::string &s, int width) {
-  int len = utf8_len(s);
-  std::cout << s;
-  for (int i = len; i < width; ++i)
-    std::cout << ' ';
-}
 // Функции авторизации
 int getLoginPass()
 {
@@ -677,51 +661,12 @@ void loadFromBinFile()
             {
                 cout << "Файл открыт успешно" << endl;
                 Student student{};
-                int studentCount = 0;
-                if (!binFile.read(reinterpret_cast<char*>(&studentCount), sizeof(int))) {
-                    cout << "Ошибка чтения количества студентов из файла!" << endl;
-                    binFile.close();
-                    return;
-                }
-                
-                for (int i = 0; i < studentCount; i++) {
-                    Student student{};
-                    binFile.read(reinterpret_cast<char*>(&student.id), sizeof(int));
-                    int lastNameLength = 0;
-                    binFile.read(reinterpret_cast<char*>(&lastNameLength), sizeof(int));
-                    if (lastNameLength > 0) {
-                        vector<char> lastNameBuffer(lastNameLength);
-                        binFile.read(&lastNameBuffer[0], lastNameLength);
-                        student.lastname = string(lastNameBuffer.begin(), lastNameBuffer.end());
-                    }
-                    int nameLength = 0;
-                    binFile.read(reinterpret_cast<char*>(&nameLength), sizeof(int));
-                    if (nameLength > 0) {
-                        vector<char> nameBuffer(nameLength);
-                        binFile.read(&nameBuffer[0], nameLength);
-                        student.name = string(nameBuffer.begin(), nameBuffer.end());
-                    }
-                    int fatherNameLength = 0;
-                    binFile.read(reinterpret_cast<char*>(&fatherNameLength), sizeof(int));
-                    if (fatherNameLength > 0) {
-                        vector<char> fatherNameBuffer(fatherNameLength);
-                        binFile.read(&fatherNameBuffer[0], fatherNameLength);
-                        student.fathername = string(fatherNameBuffer.begin(), fatherNameBuffer.end());
-                    }
-                    binFile.read(reinterpret_cast<char*>(&student.level), sizeof(int));
-                    int groupLength = 0;
-                    binFile.read(reinterpret_cast<char*>(&groupLength), sizeof(int));
-                    if (groupLength > 0) {
-                        vector<char> groupBuffer(groupLength);
-                        binFile.read(&groupBuffer[0], groupLength);
-                        student.group = string(groupBuffer.begin(), groupBuffer.end());
-                    }
-                    binFile.read(reinterpret_cast<char*>(&student.firstYear), sizeof(int));
-                    binFile.read(reinterpret_cast<char*>(student.marks), 5 * sizeof(int));
+                while (binFile.read((char*)&student, sizeof(student)))
+                {
                     studentsFromFile.push_back(student);
                 }
-            addNewStudent(studentsFromFile);
-            binFile.close();
+                addNewStudent(studentsFromFile);
+                binFile.close();
             }
             else
             {
@@ -784,7 +729,7 @@ void loadFromKeyboard()
     level_i = getCorrectLevel();
     level = to_string(level_i);
     dataOneStudent.push_back(level);
-    cout << "Введите группу(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
+    cout << "Введите группу заглавными буквами(Если будет введена строка с пробелом, то будет использовано только первое слово)" << endl;
     string group{};
     group = getCorrectGroup();
     dataOneStudent.push_back(group);
@@ -1314,9 +1259,9 @@ void printAllDataFromBase()
     // Заголовок таблицы
     cout << "|";
     cout << setw(4) << "ID" << " | ";
-    cout << setw(12) << "       Фамилия" << " | ";
-    cout << setw(12) << "           Имя" << " | ";
-    cout << setw(12) << "      Отчество" << " | ";
+    cout << setw(12) << "     Фамилия" << " | ";
+    cout << setw(12) << "         Имя" << " | ";
+    cout << setw(12) << "    Отчество" << " | ";
     cout << setw(4) << "Курс" << " | ";
     cout << setw(10) << "    Группа" << " | ";
     cout << setw(5) << "  Год" << " | ";
@@ -1327,7 +1272,7 @@ void printAllDataFromBase()
     cout << setw(5) << "Химия" << " | \n" ;
 
     // Разделитель
-    cout << string(125, '=') << "\n";
+    cout << string(119, '=') << "\n";
 
     // Данные студентов
     vector<Student> dataForExport;
@@ -1335,22 +1280,14 @@ void printAllDataFromBase()
     {
         if (student.id == 0) continue;
         dataForExport.push_back(student);
-        cout << string(125, '-') << "\n";
+        cout << string(119, '-') << "\n";
         cout << setw(1) << "|";
         cout << setw(4) << student.id << " | ";
-        // cout << setw(12) << student.lastname << " | ";
-        // cout << setw(12) << student.name << " | ";
-        // cout << setw(12) << student.fathername << " | ";
-        print_padded(student.lastname, 14);
-        cout << " | ";
-        print_padded(student.name, 14);
-        cout << " | ";
-        print_padded(student.fathername, 14);
-        cout << " | ";
+        cout << setw(12) << student.lastname << " | ";
+        cout << setw(12) << student.name << " | ";
+        cout << setw(12) << student.fathername << " | ";
         cout << setw(4) << student.level << " | ";
-        // cout << setw(10) << student.group << " | ";
-        print_padded(student.group, 12);
-        cout << "|";
+        cout << setw(10) << student.group << " | ";
         cout << setw(5) << student.firstYear << " | ";
         cout << setw(5) << student.marks[0] << " | ";
         cout << setw(5) << student.marks[1] << " | ";
@@ -1376,9 +1313,9 @@ void printStudentsFromVector(vector<Student> studentsList)
     // Заголовок таблицы
     cout << "|";
     cout << setw(4) << "ID" << " | ";
-    cout << setw(12) << "       Фамилия" << " | ";
-    cout << setw(12) << "           Имя" << " | ";
-    cout << setw(12) << "      Отчество" << " | ";
+    cout << setw(12) << "     Фамилия" << " | ";
+    cout << setw(12) << "         Имя" << " | ";
+    cout << setw(12) << "    Отчество" << " | ";
     cout << setw(4) << "Курс" << " | ";
     cout << setw(10) << "    Группа" << " | ";
     cout << setw(5) << "  Год" << " | ";
@@ -1389,7 +1326,7 @@ void printStudentsFromVector(vector<Student> studentsList)
     cout << setw(5) << "Химия" << " | \n" ;
 
     // Разделитель
-    cout << string(125, '=') << "\n";
+    cout << string(119, '=') << "\n";
 
     // Данные студентов
     vector<Student> dataForExport;
@@ -1397,22 +1334,14 @@ void printStudentsFromVector(vector<Student> studentsList)
     {
         if (student.id == 0) continue;
         dataForExport.push_back(student);
-        cout << string(125, '-') << "\n";
+        cout << string(119, '-') << "\n";
         cout << setw(1) << "|";
         cout << setw(4) << student.id << " | ";
-        // cout << setw(12) << student.lastname << " | ";
-        // cout << setw(12) << student.name << " | ";
-        // cout << setw(12) << student.fathername << " | ";
-        print_padded(student.lastname, 14);
-        cout << " | ";
-        print_padded(student.name, 14);
-        cout << " | ";
-        print_padded(student.fathername, 14);
-        cout << " | ";
+        cout << setw(12) << student.lastname << " | ";
+        cout << setw(12) << student.name << " | ";
+        cout << setw(12) << student.fathername << " | ";
         cout << setw(4) << student.level << " | ";
-        // cout << setw(10) << student.group << " | ";
-        print_padded(student.group, 12);
-        cout << "|";
+        cout << setw(10) << student.group << " | ";
         cout << setw(5) << student.firstYear << " | ";
         cout << setw(5) << student.marks[0] << " | ";
         cout << setw(5) << student.marks[1] << " | ";
@@ -1632,7 +1561,7 @@ string getCorrectFIO()
     do {
         isNotOk = false;
         cin >> n;
-        regex pattern("[0-9[:punct:]]");
+        regex pattern("[^A-ZА-Яa-zа-я-']");
         if (n.length() < 2 or regex_search(n, pattern)) {
             fixStreamState();
             cout << "Неверное значение!" << endl;
@@ -1650,11 +1579,11 @@ string getCorrectGroup()
     do {
         isNotOk = false;
         cin >> n;
-        // regex pattern("[^A-ZА-ЯЁ0-9-]");
+        regex pattern("[^(A-ZА-Я0-9-)]");
         regex letter("[A-ZА-Я]");
         regex number("[0-9]");
         regex dash("[-]");
-        if (n.length() < 2 or !regex_search(n, dash) or !regex_search(n, letter) or !regex_search(n, number)) {
+        if (n.length() < 2 or regex_search(n, pattern) or !regex_search(n, dash) or !regex_search(n, letter) or !regex_search(n, number)) {
             fixStreamState();
             cout << "Неверное значение!" << endl;
             cout << "Повторите попытку: " << endl;
@@ -1858,50 +1787,16 @@ void exportTxt(string txtFileName, vector<Student> studentsToExportTxt)
 }
 void exportBin(string binFileName, vector<Student> studentsToExportBin)
 {
-    if (studentsToExportBin.empty()) {
+    if (studentsToExportBin.empty())
+    {
         cout << "Нет студентов для экспорта" << endl;
         return;
     }
-    
     ofstream binFile(binFileName, ios::binary);
-    if (!binFile.is_open()) {
-        cout << "Ошибка открытия файла для записи!" << endl;
-        return;
+    for (Student student : studentsToExportBin)
+    {
+        binFile.write((char*)&student, sizeof(student));
     }
-
-    int studentCount = studentsToExportBin.size();
-    binFile.write(reinterpret_cast<char*>(&studentCount), sizeof(int));
-    
-    for (Student &student : studentsToExportBin) {
-        if (student.id == 0) continue;
-
-        binFile.write(reinterpret_cast<char*>(&student.id), sizeof(int));
-
-        int lastNameLength = student.lastname.length();
-        binFile.write(reinterpret_cast<char*>(&lastNameLength), sizeof(int));
-        if (lastNameLength > 0) {
-            binFile.write(student.lastname.c_str(), lastNameLength);
-        }
-        int nameLength = student.name.length();
-        binFile.write(reinterpret_cast<char*>(&nameLength), sizeof(int));
-        if (nameLength > 0) {
-            binFile.write(student.name.c_str(), nameLength);
-        }
-        int fatherNameLength = student.fathername.length();
-        binFile.write(reinterpret_cast<char*>(&fatherNameLength), sizeof(int));
-        if (fatherNameLength > 0) {
-            binFile.write(student.fathername.c_str(), fatherNameLength);
-        }
-        binFile.write(reinterpret_cast<char*>(&student.level), sizeof(int));
-        int groupLength = student.group.length();
-        binFile.write(reinterpret_cast<char*>(&groupLength), sizeof(int));
-        if (groupLength > 0) {
-            binFile.write(student.group.c_str(), groupLength);
-        }
-        binFile.write(reinterpret_cast<char*>(&student.firstYear), sizeof(int));
-        binFile.write(reinterpret_cast<char*>(student.marks), 5 * sizeof(int));
-    }
-    
     binFile.close();
     cout << "Данные успешно экспортированы в файл " << binFileName << endl;
 }
